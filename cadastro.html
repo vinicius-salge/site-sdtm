@@ -1,0 +1,1319 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro de Associado - SDTM</title>
+    <meta name="description" content="Cadastre-se como associado do Sindicato dos Despachantes do Triângulo Mineiro." />
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Outfit', 'system-ui', 'sans-serif'],
+              serif: ['Playfair Display', 'Georgia', 'serif'],
+            },
+            colors: {
+              brand: {
+                50: '#f8fafc',
+                100: '#f1f5f9',
+                200: '#e2e8f0',
+                300: '#cbd5e1',
+                400: '#94a3b8',
+                500: '#64748b',
+                600: '#475569',
+                700: '#1e293b',
+                800: '#0f172a',
+                900: '#020617',
+                primary: '#1e40af',
+                accent: '#dc2626',
+                gold: '#d4af37',
+                success: '#10b981',
+              }
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.5s ease-out forwards',
+              'slide-up': 'slideUp 0.4s ease-out forwards',
+              'slide-right': 'slideRight 0.4s ease-out forwards',
+              'bounce-subtle': 'bounceSubtle 2s infinite',
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+              slideUp: {
+                '0%': { opacity: '0', transform: 'translateY(20px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              slideRight: {
+                '0%': { opacity: '0', transform: 'translateX(-20px)' },
+                '100%': { opacity: '1', transform: 'translateX(0)' },
+              },
+              bounceSubtle: {
+                '0%, 100%': { transform: 'translateY(-3px)' },
+                '50%': { transform: 'translateY(3px)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+    
+    <style>
+      /* Background pattern */
+      .bg-pattern {
+        background-image: 
+          radial-gradient(circle at 10% 90%, rgba(30, 64, 175, 0.06) 0%, transparent 50%),
+          radial-gradient(circle at 90% 10%, rgba(220, 38, 38, 0.04) 0%, transparent 40%),
+          linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      }
+      
+      /* Custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+      
+      /* Input styling */
+      .input-field {
+        transition: all 0.2s ease;
+        background: #ffffff;
+      }
+      .input-field:focus {
+        box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+      }
+      
+      /* Stepper styles */
+      .step-active {
+        background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+        color: white;
+        box-shadow: 0 4px 14px rgba(30, 64, 175, 0.3);
+      }
+      .step-completed {
+        background: #10b981;
+        color: white;
+      }
+      .step-pending {
+        background: #e2e8f0;
+        color: #64748b;
+      }
+      
+      /* Section card */
+      .section-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+      }
+      
+      /* Progress bar */
+      .progress-bar {
+        background: linear-gradient(90deg, #1e40af 0%, #3b82f6 100%);
+        transition: width 0.4s ease;
+      }
+      
+      /* Button effects */
+      .btn-primary {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        transition: all 0.3s ease;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(30, 41, 59, 0.3);
+      }
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+      
+      .btn-secondary {
+        transition: all 0.2s ease;
+      }
+      .btn-secondary:hover {
+        background: #f1f5f9;
+      }
+      
+      /* Section title with accent */
+      .section-title {
+        position: relative;
+        padding-left: 1rem;
+      }
+      .section-title::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 24px;
+        background: linear-gradient(180deg, #dc2626 0%, #b91c1c 100%);
+        border-radius: 2px;
+      }
+      
+      /* Focus visible for accessibility */
+      *:focus-visible {
+        outline: 2px solid #1e40af;
+        outline-offset: 2px;
+      }
+      
+      /* Validation states */
+      .input-error {
+        border-color: #ef4444 !important;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+      }
+      .input-success {
+        border-color: #10b981 !important;
+      }
+      
+      /* Reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  
+  <body class="font-sans text-slate-800 antialiased min-h-screen bg-pattern">
+    
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <a href="index.html" class="flex items-center gap-3 group">
+            <div class="w-10 h-10 relative">
+              <svg viewBox="0 0 100 100" class="w-full h-full">
+                <path d="M 5,95 V 5 H 95 L 90,8 Q 80,10 75,15 T 60,30 Q 55,40 50,45 L 65,60 T 80,75 Q 90,85 95,90 Z" 
+                      stroke="#dc2626" stroke-width="4" fill="none"/>
+                <text x="32" y="42" font-family="Playfair Display" font-weight="700" font-size="10" fill="#0f172a">SDTM</text>
+              </svg>
+            </div>
+            <div class="hidden sm:block">
+              <span class="font-serif font-bold text-lg text-brand-800">SDTM</span>
+              <span class="text-[10px] uppercase tracking-wider text-brand-500 block -mt-1">Triângulo Mineiro</span>
+            </div>
+          </a>
+          
+          <div class="flex items-center gap-4">
+            <a href="login.html" class="text-sm font-medium text-brand-600 hover:text-brand-800 transition-colors">
+              Já tem conta? Entrar
+            </a>
+            <a href="index.html" class="text-sm font-medium text-brand-500 hover:text-brand-700 transition-colors flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+              </svg>
+              Voltar
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      
+      <!-- Page Header -->
+      <div class="text-center mb-10 animate-fade-in">
+        <h1 class="font-serif text-3xl sm:text-4xl font-semibold text-brand-800 mb-3">
+          Requerimento de Cadastro
+        </h1>
+        <p class="text-brand-500 max-w-2xl mx-auto">
+          Preencha o formulário abaixo para se tornar um associado do SDTM. 
+          Todos os campos marcados com <span class="text-red-500">*</span> são obrigatórios.
+        </p>
+      </div>
+
+      <!-- Progress Bar (Mobile) -->
+      <div class="sm:hidden mb-6">
+        <div class="flex justify-between text-xs text-brand-500 mb-2">
+          <span id="mobileStepLabel">Dados Pessoais</span>
+          <span id="mobileStepCount">1 de 3</span>
+        </div>
+        <div class="h-2 bg-slate-200 rounded-full overflow-hidden">
+          <div id="mobileProgressBar" class="progress-bar h-full w-1/3 rounded-full"></div>
+        </div>
+      </div>
+
+      <!-- Stepper (Desktop) -->
+      <div class="hidden sm:flex items-center justify-center mb-10">
+        <div class="flex items-center gap-4">
+          <!-- Step 1 -->
+          <div class="flex items-center gap-3">
+            <button type="button" id="step1Btn" class="step-active w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all" onclick="goToStep(1)">
+              1
+            </button>
+            <span class="font-medium text-brand-800">Dados Pessoais</span>
+          </div>
+          
+          <!-- Connector -->
+          <div class="w-16 h-0.5 bg-slate-200">
+            <div id="connector1" class="h-full bg-brand-primary transition-all duration-500 w-0"></div>
+          </div>
+          
+          <!-- Step 2 -->
+          <div class="flex items-center gap-3">
+            <button type="button" id="step2Btn" class="step-pending w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all" onclick="goToStep(2)">
+              2
+            </button>
+            <span id="step2Label" class="font-medium text-brand-400">Dados Comerciais</span>
+          </div>
+          
+          <!-- Connector -->
+          <div class="w-16 h-0.5 bg-slate-200">
+            <div id="connector2" class="h-full bg-brand-primary transition-all duration-500 w-0"></div>
+          </div>
+          
+          <!-- Step 3 -->
+          <div class="flex items-center gap-3">
+            <button type="button" id="step3Btn" class="step-pending w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all" onclick="goToStep(3)">
+              3
+            </button>
+            <span id="step3Label" class="font-medium text-brand-400">Acesso ao Sistema</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Container -->
+      <form id="cadastroForm" class="space-y-6" novalidate>
+        
+        <!-- Número da Inscrição (Topo) -->
+        <div class="section-card rounded-2xl p-6 animate-slide-up">
+          <div class="max-w-md">
+            <label for="numeroInscricao" class="block text-sm font-semibold text-brand-700 mb-2">
+              Número da Inscrição <span class="text-red-500">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="numeroInscricao" 
+              name="numeroInscricao"
+              required
+              placeholder="Digite o número da inscrição"
+              class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <!-- Step 1: Dados Pessoais -->
+        <section id="step1" class="step-section">
+          <div class="section-card rounded-2xl p-6 sm:p-8">
+            <h2 class="section-title font-serif text-xl font-semibold text-brand-800 mb-6">
+              Dados Pessoais
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <!-- Nome -->
+              <div class="lg:col-span-3">
+                <label for="nome" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  Nome Completo <span class="text-red-500">*</span>
+                </label>
+                <input 
+                  type="text" 
+                  id="nome" 
+                  name="nome"
+                  required
+                  placeholder="Digite seu nome completo"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                />
+              </div>
+              
+              <!-- Pai -->
+              <div class="lg:col-span-2">
+                <label for="pai" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  Pai
+                </label>
+                <input 
+                  type="text" 
+                  id="pai" 
+                  name="pai"
+                  placeholder="Nome do pai"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                />
+              </div>
+              
+              <!-- Mãe -->
+              <div class="lg:col-span-2">
+                <label for="mae" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  Mãe
+                </label>
+                <input 
+                  type="text" 
+                  id="mae" 
+                  name="mae"
+                  placeholder="Nome da mãe"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                />
+              </div>
+              
+              <!-- CPF -->
+              <div>
+                <label for="cpf" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  CPF <span class="text-red-500">*</span>
+                </label>
+                <input 
+                  type="text" 
+                  id="cpf" 
+                  name="cpf"
+                  required
+                  maxlength="14"
+                  placeholder="000.000.000-00"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                />
+              </div>
+              
+              <!-- RG -->
+              <div>
+                <label for="rg" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  RG
+                </label>
+                <input 
+                  type="text" 
+                  id="rg" 
+                  name="rg"
+                  placeholder="00.000.000-0"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                />
+              </div>
+              
+              <!-- SSP -->
+              <div>
+                <label for="ssp" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  Órgão Emissor (SSP)
+                </label>
+                <input 
+                  type="text" 
+                  id="ssp" 
+                  name="ssp"
+                  placeholder="Ex: SSP/MG"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                />
+              </div>
+              
+              <!-- Estado Civil -->
+              <div>
+                <label for="estadoCivil" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  Estado Civil
+                </label>
+                <select 
+                  id="estadoCivil" 
+                  name="estadoCivil"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none bg-white"
+                >
+                  <option value="">Selecione</option>
+                  <option value="solteiro">Solteiro(a)</option>
+                  <option value="casado">Casado(a)</option>
+                  <option value="divorciado">Divorciado(a)</option>
+                  <option value="viuvo">Viúvo(a)</option>
+                  <option value="uniao">União Estável</option>
+                </select>
+              </div>
+              
+              <!-- Data Nascimento -->
+              <div>
+                <label for="dataNascimento" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  Data de Nascimento
+                </label>
+                <input 
+                  type="date" 
+                  id="dataNascimento" 
+                  name="dataNascimento"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                />
+              </div>
+              
+              <!-- Naturalidade -->
+              <div>
+                <label for="naturalidade" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  Naturalidade
+                </label>
+                <input 
+                  type="text" 
+                  id="naturalidade" 
+                  name="naturalidade"
+                  placeholder="Cidade de nascimento"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                />
+              </div>
+              
+              <!-- UF Naturalidade -->
+              <div>
+                <label for="ufNaturalidade" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  UF
+                </label>
+                <select 
+                  id="ufNaturalidade" 
+                  name="ufNaturalidade"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none bg-white"
+                >
+                  <option value="">Selecione</option>
+                  <option value="MG" selected>MG</option>
+                  <option value="SP">SP</option>
+                  <option value="RJ">RJ</option>
+                  <option value="DF">DF</option>
+                  <option value="GO">GO</option>
+                  <option value="OUTRO">Outro</option>
+                </select>
+              </div>
+              
+              <!-- Nacionalidade -->
+              <div>
+                <label for="nacionalidade" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  Nacionalidade
+                </label>
+                <input 
+                  type="text" 
+                  id="nacionalidade" 
+                  name="nacionalidade"
+                  value="Brasileira"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                />
+              </div>
+              
+              <!-- Grau de Instrução -->
+              <div class="lg:col-span-2">
+                <label for="grauInstrucao" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  Grau de Instrução
+                </label>
+                <select 
+                  id="grauInstrucao" 
+                  name="grauInstrucao"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none bg-white"
+                >
+                  <option value="">Selecione</option>
+                  <option value="fundamental">Ensino Fundamental</option>
+                  <option value="medio">Ensino Médio</option>
+                  <option value="tecnico">Técnico</option>
+                  <option value="superior">Ensino Superior</option>
+                  <option value="pos">Pós-Graduação</option>
+                </select>
+              </div>
+              
+              <!-- Título de Eleitor -->
+              <div>
+                <label for="tituloEleitor" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  Nº Título de Eleitor
+                </label>
+                <input 
+                  type="text" 
+                  id="tituloEleitor" 
+                  name="tituloEleitor"
+                  placeholder="0000 0000 0000"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                />
+              </div>
+              
+              <!-- Zona -->
+              <div>
+                <label for="zona" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  Zona
+                </label>
+                <input 
+                  type="text" 
+                  id="zona" 
+                  name="zona"
+                  placeholder="000"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                />
+              </div>
+              
+              <!-- Seção -->
+              <div>
+                <label for="secao" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  Seção
+                </label>
+                <input 
+                  type="text" 
+                  id="secao" 
+                  name="secao"
+                  placeholder="0000"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                />
+              </div>
+            </div>
+            
+            <!-- Endereço Pessoal -->
+            <div class="mt-6 pt-6 border-t border-slate-200">
+              <h3 class="font-semibold text-brand-700 mb-4">Endereço Residencial</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div class="lg:col-span-2">
+                  <label for="endereco" class="block text-sm font-medium text-brand-700 mb-1.5">
+                    Endereço
+                  </label>
+                  <input 
+                    type="text" 
+                    id="endereco" 
+                    name="endereco"
+                    placeholder="Rua, Avenida, etc."
+                    class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                  />
+                </div>
+                
+                <div>
+                  <label for="bairro" class="block text-sm font-medium text-brand-700 mb-1.5">
+                    Bairro
+                  </label>
+                  <input 
+                    type="text" 
+                    id="bairro" 
+                    name="bairro"
+                    placeholder="Bairro"
+                    class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                  />
+                </div>
+                
+                <div>
+                  <label for="cidade" class="block text-sm font-medium text-brand-700 mb-1.5">
+                    Cidade
+                  </label>
+                  <input 
+                    type="text" 
+                    id="cidade" 
+                    name="cidade"
+                    placeholder="Cidade"
+                    class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                  />
+                </div>
+                
+                <div>
+                  <label for="cep" class="block text-sm font-medium text-brand-700 mb-1.5">
+                    CEP
+                  </label>
+                  <input 
+                    type="text" 
+                    id="cep" 
+                    name="cep"
+                    maxlength="9"
+                    placeholder="00000-000"
+                    class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                  />
+                </div>
+                
+                <div>
+                  <label for="telefone" class="block text-sm font-medium text-brand-700 mb-1.5">
+                    Telefone
+                  </label>
+                  <input 
+                    type="tel" 
+                    id="telefone" 
+                    name="telefone"
+                    placeholder="(34) 0000-0000"
+                    class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                  />
+                </div>
+                
+                <div>
+                  <label for="celular" class="block text-sm font-medium text-brand-700 mb-1.5">
+                    Celular <span class="text-red-500">*</span>
+                  </label>
+                  <input 
+                    type="tel" 
+                    id="celular" 
+                    name="celular"
+                    required
+                    maxlength="15"
+                    placeholder="(34) 00000-0000"
+                    class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                  />
+                </div>
+                
+                <div class="lg:col-span-2">
+                  <label for="emailPessoal" class="block text-sm font-medium text-brand-700 mb-1.5">
+                    E-mail Pessoal <span class="text-red-500">*</span>
+                  </label>
+                  <input 
+                    type="email" 
+                    id="emailPessoal" 
+                    name="emailPessoal"
+                    required
+                    placeholder="seu@email.com"
+                    class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Navigation Buttons -->
+          <div class="flex justify-end mt-6">
+            <button type="button" onclick="nextStep(2)" class="btn-primary px-8 py-3 text-white font-semibold rounded-xl flex items-center gap-2">
+              Próximo
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        </section>
+
+        <!-- Step 2: Dados Comerciais -->
+        <section id="step2" class="step-section hidden">
+          <div class="section-card rounded-2xl p-6 sm:p-8">
+            <h2 class="section-title font-serif text-xl font-semibold text-brand-800 mb-6">
+              Dados Comerciais
+            </h2>
+            
+            <!-- Endereço Comercial -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+              <div class="lg:col-span-2">
+                <label for="enderecoComercial" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  Endereço Comercial
+                </label>
+                <input 
+                  type="text" 
+                  id="enderecoComercial" 
+                  name="enderecoComercial"
+                  placeholder="Rua, Avenida, etc."
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                />
+              </div>
+              
+              <div>
+                <label for="bairroComercial" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  Bairro
+                </label>
+                <input 
+                  type="text" 
+                  id="bairroComercial" 
+                  name="bairroComercial"
+                  placeholder="Bairro"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                />
+              </div>
+              
+              <div>
+                <label for="cidadeComercial" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  Cidade
+                </label>
+                <input 
+                  type="text" 
+                  id="cidadeComercial" 
+                  name="cidadeComercial"
+                  placeholder="Cidade"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                />
+              </div>
+              
+              <div>
+                <label for="cepComercial" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  CEP
+                </label>
+                <input 
+                  type="text" 
+                  id="cepComercial" 
+                  name="cepComercial"
+                  maxlength="9"
+                  placeholder="00000-000"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                />
+              </div>
+              
+              <div>
+                <label for="telefoneComercial" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  Telefone Comercial
+                </label>
+                <input 
+                  type="tel" 
+                  id="telefoneComercial" 
+                  name="telefoneComercial"
+                  placeholder="(34) 0000-0000"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                />
+              </div>
+              
+              <div>
+                <label for="fax" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  Fax
+                </label>
+                <input 
+                  type="tel" 
+                  id="fax" 
+                  name="fax"
+                  placeholder="(34) 0000-0000"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                />
+              </div>
+              
+              <div class="lg:col-span-2">
+                <label for="emailComercial" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  E-mail Comercial
+                </label>
+                <input 
+                  type="email" 
+                  id="emailComercial" 
+                  name="emailComercial"
+                  placeholder="comercial@empresa.com"
+                  class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                />
+              </div>
+            </div>
+            
+            <!-- Informações Profissionais -->
+            <div class="mt-6 pt-6 border-t border-slate-200">
+              <h3 class="font-semibold text-brand-700 mb-4">Informações Profissionais</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div>
+                  <label for="cidadeAtuacao" class="block text-sm font-medium text-brand-700 mb-1.5">
+                    Cidade de Atuação
+                  </label>
+                  <input 
+                    type="text" 
+                    id="cidadeAtuacao" 
+                    name="cidadeAtuacao"
+                    placeholder="Cidade principal de trabalho"
+                    class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                  />
+                </div>
+                
+                <div>
+                  <label for="credenciamentoDetran" class="block text-sm font-medium text-brand-700 mb-1.5">
+                    Credenciamento DETRAN
+                  </label>
+                  <input 
+                    type="text" 
+                    id="credenciamentoDetran" 
+                    name="credenciamentoDetran"
+                    placeholder="Nº de credenciamento"
+                    class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                  />
+                </div>
+                
+                <div class="lg:col-span-2">
+                  <label for="despachanteArea" class="block text-sm font-medium text-brand-700 mb-1.5">
+                    Despachante - Área de Atuação
+                  </label>
+                  <input 
+                    type="text" 
+                    id="despachanteArea" 
+                    name="despachanteArea"
+                    placeholder="Ex: Veículos, Documentação, Licenciamento..."
+                    class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Navigation Buttons -->
+          <div class="flex justify-between mt-6">
+            <button type="button" onclick="prevStep(1)" class="btn-secondary px-6 py-3 text-brand-600 font-medium rounded-xl flex items-center gap-2 border border-slate-300">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+              Anterior
+            </button>
+            <button type="button" onclick="nextStep(3)" class="btn-primary px-8 py-3 text-white font-semibold rounded-xl flex items-center gap-2">
+              Próximo
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        </section>
+
+        <!-- Step 3: Dados de Acesso -->
+        <section id="step3" class="step-section hidden">
+          <div class="section-card rounded-2xl p-6 sm:p-8">
+            <h2 class="section-title font-serif text-xl font-semibold text-brand-800 mb-6">
+              Dados de Acesso ao Sistema
+            </h2>
+            
+            <div class="max-w-xl space-y-6">
+              <!-- Usuário -->
+              <div>
+                <label for="usuario" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  Usuário <span class="text-red-500">*</span>
+                </label>
+                <div class="flex gap-3">
+                  <input 
+                    type="text" 
+                    id="usuario" 
+                    name="usuario"
+                    required
+                    minlength="4"
+                    maxlength="20"
+                    placeholder="Escolha um nome de usuário"
+                    class="input-field flex-1 px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
+                  />
+                  <button 
+                    type="button" 
+                    onclick="verificarDisponibilidade()"
+                    class="px-4 py-3 bg-slate-100 text-brand-700 font-medium rounded-xl hover:bg-slate-200 transition-colors border border-slate-300 whitespace-nowrap"
+                  >
+                    Verificar
+                  </button>
+                </div>
+                <p id="usuarioStatus" class="text-sm mt-2 hidden"></p>
+              </div>
+              
+              <!-- Senha -->
+              <div>
+                <label for="senha" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  Senha <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <input 
+                    type="password" 
+                    id="senha" 
+                    name="senha"
+                    required
+                    minlength="6"
+                    maxlength="15"
+                    placeholder="••••••"
+                    class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none pr-12"
+                  />
+                  <button 
+                    type="button"
+                    onclick="togglePassword('senha', 'eyeSenha', 'eyeOffSenha')"
+                    class="absolute inset-y-0 right-0 pr-4 flex items-center text-brand-400 hover:text-brand-600"
+                  >
+                    <svg id="eyeSenha" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                    <svg id="eyeOffSenha" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                    </svg>
+                  </button>
+                </div>
+                <p class="text-xs text-brand-500 mt-1.5">
+                  Use 6 a 15 caracteres (apenas letras e números)
+                </p>
+                
+                <!-- Password Strength Indicator -->
+                <div class="mt-3">
+                  <div class="flex gap-1 h-1.5 mb-2">
+                    <div id="strength1" class="flex-1 bg-slate-200 rounded-full transition-colors"></div>
+                    <div id="strength2" class="flex-1 bg-slate-200 rounded-full transition-colors"></div>
+                    <div id="strength3" class="flex-1 bg-slate-200 rounded-full transition-colors"></div>
+                    <div id="strength4" class="flex-1 bg-slate-200 rounded-full transition-colors"></div>
+                  </div>
+                  <p id="strengthText" class="text-xs text-brand-400">Força da senha</p>
+                </div>
+              </div>
+              
+              <!-- Confirmar Senha -->
+              <div>
+                <label for="confirmarSenha" class="block text-sm font-medium text-brand-700 mb-1.5">
+                  Confirme a Senha <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <input 
+                    type="password" 
+                    id="confirmarSenha" 
+                    name="confirmarSenha"
+                    required
+                    minlength="6"
+                    maxlength="15"
+                    placeholder="••••••"
+                    class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none pr-12"
+                  />
+                  <button 
+                    type="button"
+                    onclick="togglePassword('confirmarSenha', 'eyeConf', 'eyeOffConf')"
+                    class="absolute inset-y-0 right-0 pr-4 flex items-center text-brand-400 hover:text-brand-600"
+                  >
+                    <svg id="eyeConf" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                    <svg id="eyeOffConf" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                    </svg>
+                  </button>
+                </div>
+                <p id="senhaMatchError" class="text-sm text-red-500 mt-1 hidden">
+                  As senhas não coincidem.
+                </p>
+              </div>
+            </div>
+            
+            <!-- Info Box -->
+            <div class="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+              <p class="text-sm text-amber-800">
+                <span class="font-semibold">Importante:</span> Caso necessite alterar seus dados, digite o nome de usuário e senha na página inicial do site para acessar sua conta.
+              </p>
+            </div>
+          </div>
+          
+          <!-- Navigation Buttons -->
+          <div class="flex justify-between mt-6">
+            <button type="button" onclick="prevStep(2)" class="btn-secondary px-6 py-3 text-brand-600 font-medium rounded-xl flex items-center gap-2 border border-slate-300">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+              Anterior
+            </button>
+            <div class="flex gap-3">
+              <button type="button" onclick="cancelarCadastro()" class="btn-secondary px-6 py-3 text-brand-600 font-medium rounded-xl border border-slate-300 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors">
+                Cancelar
+              </button>
+              <button type="submit" id="submitBtn" class="btn-primary px-8 py-3 text-white font-semibold rounded-xl flex items-center gap-2">
+                <span id="btnText">Finalizar Cadastro</span>
+                <span id="btnLoading" class="hidden">
+                  <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </span>
+              </button>
+            </div>
+          </div>
+        </section>
+        
+      </form>
+    </main>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-3" role="status" aria-live="polite"></div>
+
+    <script>
+      // Current step
+      let currentStep = 1;
+      const totalSteps = 3;
+      
+      // Step navigation
+      function goToStep(step) {
+        if (step < 1 || step > totalSteps) return;
+        
+        // Hide all steps
+        document.querySelectorAll('.step-section').forEach(s => s.classList.add('hidden'));
+        
+        // Show target step
+        document.getElementById(`step${step}`).classList.remove('hidden');
+        document.getElementById(`step${step}`).classList.add('animate-slide-up');
+        
+        // Update stepper UI
+        updateStepper(step);
+        currentStep = step;
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      
+      function nextStep(step) {
+        if (validateStep(currentStep)) {
+          goToStep(step);
+        }
+      }
+      
+      function prevStep(step) {
+        goToStep(step);
+      }
+      
+      function updateStepper(step) {
+        // Desktop stepper
+        for (let i = 1; i <= totalSteps; i++) {
+          const btn = document.getElementById(`step${i}Btn`);
+          const label = document.getElementById(`step${i}Label`);
+          
+          if (i < step) {
+            btn.className = 'step-completed w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all';
+            btn.innerHTML = '✓';
+            label.className = 'font-medium text-brand-success';
+          } else if (i === step) {
+            btn.className = 'step-active w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all';
+            btn.innerHTML = i;
+            label.className = 'font-medium text-brand-800';
+          } else {
+            btn.className = 'step-pending w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all';
+            btn.innerHTML = i;
+            label.className = 'font-medium text-brand-400';
+          }
+        }
+        
+        // Update connectors
+        document.getElementById('connector1').style.width = step > 1 ? '100%' : '0%';
+        document.getElementById('connector2').style.width = step > 2 ? '100%' : '0%';
+        
+        // Mobile progress
+        const mobileLabels = ['', 'Dados Pessoais', 'Dados Comerciais', 'Acesso ao Sistema'];
+        document.getElementById('mobileStepLabel').textContent = mobileLabels[step];
+        document.getElementById('mobileStepCount').textContent = `${step} de ${totalSteps}`;
+        document.getElementById('mobileProgressBar').style.width = `${(step / totalSteps) * 100}%`;
+      }
+      
+      // Validation
+      function validateStep(step) {
+        const section = document.getElementById(`step${step}`);
+        const requiredFields = section.querySelectorAll('[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+          if (!field.value.trim()) {
+            field.classList.add('input-error');
+            isValid = false;
+          } else {
+            field.classList.remove('input-error');
+          }
+        });
+        
+        if (!isValid) {
+          showToast('Por favor, preencha todos os campos obrigatórios.', 'error');
+        }
+        
+        return isValid;
+      }
+      
+      // Input masks
+      function applyMasks() {
+        // CPF mask
+        document.getElementById('cpf').addEventListener('input', function(e) {
+          let value = e.target.value.replace(/\D/g, '');
+          if (value.length <= 11) {
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            e.target.value = value;
+          }
+        });
+        
+        // RG mask
+        document.getElementById('rg').addEventListener('input', function(e) {
+          let value = e.target.value.replace(/\D/g, '');
+          if (value.length <= 9) {
+            value = value.replace(/(\d{2})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d{1})$/, '$1-$2');
+            e.target.value = value;
+          }
+        });
+        
+        // CEP masks
+        ['cep', 'cepComercial'].forEach(id => {
+          document.getElementById(id).addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 8) {
+              value = value.replace(/(\d{5})(\d)/, '$1-$2');
+              e.target.value = value;
+            }
+          });
+        });
+        
+        // Phone masks
+        ['telefone', 'telefoneComercial', 'fax'].forEach(id => {
+          document.getElementById(id)?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 10) {
+              value = value.replace(/(\d{2})(\d)/, '($1) $2');
+              value = value.replace(/(\d{4})(\d)/, '$1-$2');
+              e.target.value = value;
+            }
+          });
+        });
+        
+        // Celular mask
+        document.getElementById('celular').addEventListener('input', function(e) {
+          let value = e.target.value.replace(/\D/g, '');
+          if (value.length <= 11) {
+            value = value.replace(/(\d{2})(\d)/, '($1) $2');
+            value = value.replace(/(\d{5})(\d)/, '$1-$2');
+            e.target.value = value;
+          }
+        });
+      }
+      
+      // Password toggle
+      function togglePassword(inputId, eyeId, eyeOffId) {
+        const input = document.getElementById(inputId);
+        const eye = document.getElementById(eyeId);
+        const eyeOff = document.getElementById(eyeOffId);
+        
+        if (input.type === 'password') {
+          input.type = 'text';
+          eye.classList.add('hidden');
+          eyeOff.classList.remove('hidden');
+        } else {
+          input.type = 'password';
+          eye.classList.remove('hidden');
+          eyeOff.classList.add('hidden');
+        }
+      }
+      
+      // Password strength checker
+      document.getElementById('senha').addEventListener('input', function(e) {
+        const password = e.target.value;
+        const strength = checkPasswordStrength(password);
+        
+        // Update bars
+        for (let i = 1; i <= 4; i++) {
+          const bar = document.getElementById(`strength${i}`);
+          if (i <= strength.score) {
+            bar.className = `flex-1 rounded-full transition-colors ${strength.color}`;
+          } else {
+            bar.className = 'flex-1 bg-slate-200 rounded-full transition-colors';
+          }
+        }
+        
+        document.getElementById('strengthText').textContent = strength.label;
+        document.getElementById('strengthText').className = `text-xs ${strength.textColor}`;
+      });
+      
+      function checkPasswordStrength(password) {
+        let score = 0;
+        if (password.length >= 6) score++;
+        if (password.length >= 10) score++;
+        if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
+        if (/\d/.test(password)) score++;
+        
+        const levels = [
+          { score: 0, label: 'Muito fraca', color: 'bg-red-400', textColor: 'text-red-500' },
+          { score: 1, label: 'Fraca', color: 'bg-orange-400', textColor: 'text-orange-500' },
+          { score: 2, label: 'Média', color: 'bg-yellow-400', textColor: 'text-yellow-600' },
+          { score: 3, label: 'Boa', color: 'bg-blue-400', textColor: 'text-blue-600' },
+          { score: 4, label: 'Forte', color: 'bg-emerald-400', textColor: 'text-emerald-600' }
+        ];
+        
+        return levels[score];
+      }
+      
+      // Password match check
+      document.getElementById('confirmarSenha').addEventListener('input', function(e) {
+        const senha = document.getElementById('senha').value;
+        const confirmar = e.target.value;
+        const error = document.getElementById('senhaMatchError');
+        
+        if (confirmar && senha !== confirmar) {
+          error.classList.remove('hidden');
+          e.target.classList.add('input-error');
+        } else {
+          error.classList.add('hidden');
+          e.target.classList.remove('input-error');
+        }
+      });
+      
+      // Verificar disponibilidade do usuário (mock)
+      function verificarDisponibilidade() {
+        const usuario = document.getElementById('usuario').value.trim();
+        const status = document.getElementById('usuarioStatus');
+        
+        if (usuario.length < 4) {
+          status.textContent = 'O usuário deve ter pelo menos 4 caracteres.';
+          status.className = 'text-sm mt-2 text-red-500';
+          status.classList.remove('hidden');
+          return;
+        }
+        
+        // Simulate API check
+        status.textContent = 'Verificando...';
+        status.className = 'text-sm mt-2 text-brand-500';
+        status.classList.remove('hidden');
+        
+        setTimeout(() => {
+          // Mock: usuario "admin" ou "teste" já existe
+          const taken = ['admin', 'teste', 'sdtm', 'despachante'].includes(usuario.toLowerCase());
+          
+          if (taken) {
+            status.textContent = 'Este usuário já está em uso. Tente outro.';
+            status.className = 'text-sm mt-2 text-red-500';
+          } else {
+            status.textContent = 'Usuário disponível!';
+            status.className = 'text-sm mt-2 text-emerald-500';
+          }
+        }, 800);
+      }
+      
+      // Cancelar cadastro
+      function cancelarCadastro() {
+        if (confirm('Tem certeza que deseja cancelar? Todos os dados preenchidos serão perdidos.')) {
+          window.location.href = 'index.html';
+        }
+      }
+      
+      // Toast notification
+      function showToast(message, type = 'error') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        
+        const colors = type === 'success' 
+          ? 'bg-emerald-500 text-white' 
+          : 'bg-red-500 text-white';
+        
+        const icon = type === 'success'
+          ? '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>'
+          : '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+        
+        toast.className = `${colors} px-5 py-3 rounded-xl shadow-lg flex items-center gap-3 transform translate-y-4 opacity-0 transition-all duration-300`;
+        toast.innerHTML = `${icon}<span class="font-medium text-sm">${message}</span>`;
+        
+        container.appendChild(toast);
+        
+        requestAnimationFrame(() => {
+          toast.classList.remove('translate-y-4', 'opacity-0');
+        });
+        
+        setTimeout(() => {
+          toast.classList.add('translate-y-4', 'opacity-0');
+          setTimeout(() => toast.remove(), 300);
+        }, 4000);
+      }
+      
+      // Form submission
+      document.getElementById('cadastroForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Validate all steps
+        for (let i = 1; i <= totalSteps; i++) {
+          if (!validateStep(i)) {
+            goToStep(i);
+            return;
+          }
+        }
+        
+        // Check password match
+        const senha = document.getElementById('senha').value;
+        const confirmar = document.getElementById('confirmarSenha').value;
+        if (senha !== confirmar) {
+          showToast('As senhas não coincidem.');
+          goToStep(3);
+          document.getElementById('confirmarSenha').focus();
+          return;
+        }
+        
+        // Show loading
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnLoading = document.getElementById('btnLoading');
+        
+        submitBtn.disabled = true;
+        btnText.classList.add('hidden');
+        btnLoading.classList.remove('hidden');
+        
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Success
+        showToast('Cadastro realizado com sucesso! Redirecionando...', 'success');
+        
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 2000);
+      });
+      
+      // Clear error on input
+      document.querySelectorAll('input, select').forEach(input => {
+        input.addEventListener('input', function() {
+          this.classList.remove('input-error');
+        });
+      });
+      
+      // Initialize
+      applyMasks();
+    </script>
+  </body>
+</html>

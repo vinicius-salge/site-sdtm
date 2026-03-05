@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(find:*)",
+      "Bash(npm run lint)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run:*)",
+      "Bash(npx next lint:*)",
+      "Bash(npm install:*)",
+      "Bash(NEXT_TELEMETRY_DISABLED=1 npm run build:*)",
+      "Bash(npm ls:*)",
+      "Bash(head:*)",
+      "Bash(ls:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(del:*)",
+      "Bash(npx eslint:*)"
+    ],
+    "deny": [],
+    "defaultMode": "bypassPermissions"
+  }
+}
