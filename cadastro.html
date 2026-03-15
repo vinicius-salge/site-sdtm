@@ -4,12 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cadastro de Associado - SDTM</title>
-    <meta name="description" content="Cadastre-se como associado do Sindicato dos Despachantes do Triângulo Mineiro." />
-    
-    <!-- Tailwind CSS -->
+    <meta name="description" content="Cadastre-se como associado do Sindicato dos Despachantes do Triangulo Mineiro." />
+
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -1266,7 +1263,7 @@
       // Form submission
       document.getElementById('cadastroForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-        
+
         // Validate all steps
         for (let i = 1; i <= totalSteps; i++) {
           if (!validateStep(i)) {
@@ -1274,7 +1271,7 @@
             return;
           }
         }
-        
+
         // Check password match
         const senha = document.getElementById('senha').value;
         const confirmar = document.getElementById('confirmarSenha').value;
@@ -1284,25 +1281,77 @@
           document.getElementById('confirmarSenha').focus();
           return;
         }
-        
+
         // Show loading
         const submitBtn = document.getElementById('submitBtn');
         const btnText = document.getElementById('btnText');
         const btnLoading = document.getElementById('btnLoading');
-        
+
         submitBtn.disabled = true;
         btnText.classList.add('hidden');
         btnLoading.classList.remove('hidden');
-        
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Success
-        showToast('Cadastro realizado com sucesso! Redirecionando...', 'success');
-        
-        setTimeout(() => {
-          window.location.href = 'login.html';
-        }, 2000);
+
+        // Collect form data
+        const cpfRaw = document.getElementById('cpf').value.replace(/\D/g, '');
+        const emailVal = document.getElementById('emailPessoal').value || document.getElementById('emailComercial').value;
+
+        const dadosCadastro = {
+          numeroInscricao: document.getElementById('numeroInscricao').value,
+          nome: document.getElementById('nome').value,
+          pai: document.getElementById('pai').value,
+          mae: document.getElementById('mae').value,
+          cpf: document.getElementById('cpf').value,
+          rg: document.getElementById('rg').value,
+          ssp: document.getElementById('ssp').value,
+          estadoCivil: document.getElementById('estadoCivil').value,
+          dataNascimento: document.getElementById('dataNascimento').value,
+          naturalidade: document.getElementById('naturalidade').value,
+          nacionalidade: document.getElementById('nacionalidade').value,
+          endereco: document.getElementById('endereco').value,
+          bairro: document.getElementById('bairro').value,
+          cidade: document.getElementById('cidade').value,
+          cep: document.getElementById('cep').value,
+          celular: document.getElementById('celular').value,
+          empresa: document.getElementById('cidadeAtuacao')?.value || '',
+          cnpj: document.getElementById('credenciamentoDetran')?.value || '',
+          enderecoComercial: document.getElementById('enderecoComercial').value,
+          telefoneComercial: document.getElementById('telefoneComercial').value,
+        };
+
+        try {
+          const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: emailVal,
+              password: senha,
+              cpf: cpfRaw,
+              dadosCadastro,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            showToast(data.error || 'Erro ao realizar cadastro.');
+            submitBtn.disabled = false;
+            btnText.classList.remove('hidden');
+            btnLoading.classList.add('hidden');
+            return;
+          }
+
+          if (data.token) {
+            localStorage.setItem('sdtm_token', data.token);
+          }
+
+          showToast('Cadastro realizado com sucesso! Redirecionando...', 'success');
+          setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+        } catch (err) {
+          showToast('Erro de conexao. Verifique sua internet e tente novamente.');
+          submitBtn.disabled = false;
+          btnText.classList.remove('hidden');
+          btnLoading.classList.add('hidden');
+        }
       });
       
       // Clear error on input

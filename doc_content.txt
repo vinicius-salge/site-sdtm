@@ -1,0 +1,608 @@
+User:
+Tem como hospedar um front com back end e banco postgres na vercel?
+Kimi:
+Sim, é possível, mas com uma arquitetura híbrida: a Vercel hospeda o front-end e o back-end (APIs serverless), mas o PostgreSQL precisa estar em outro serviço, pois a Vercel não oferece banco de dados relacional nativo.
+Aqui está como estruturar:
+Arquitetura Recomendada
+┌─────────────────┐
+│     Vercel      │
+│  (Front + API)  │
+└────────┬────────┘
+         │
+    (HTTP/Conexão)
+         │
+┌────────▼────────┐
+│   PostgreSQL    │
+│  (Serviço Externo) │
+│  Neon/Supabase/ │
+│   Railway/etc   │
+└─────────────────┘
+O que hospedar na Vercel
+Opções de PostgreSQL na nuvem (grátis ou pago)
+Neon - PostgreSQL serverless, ótima integração com Vercel, tem tier gratuito generoso
+Supabase - PostgreSQL + APIs automáticas, autenticação built-in
+Railway - Deploy simples de PostgreSQL com bom free tier
+Render - PostgreSQL gratuito (expira em 90 dias de inatividade)
+AWS RDS / Google Cloud SQL - Para produção em larga escala
+Exemplo prático (Next.js + Neon)
+// pages/api/users.js ou app/api/users/route.js
+import { Pool } from '@neondatabase/serverless';
+
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+
+export default async function handler(req, res) {
+  const { rows } = await pool.query('SELECT * FROM users');
+  res.json(rows);
+}
+Variável de ambiente na Vercel:
+DATABASE_URL=postgresql://user:password@ep-xxx.us-east-1.aws.neon.tech/dbname
+Limitações importantes
+Serverless: As funções na Vercel são serverless (iniciam/desligam rapidamente), então use connection pooling (PgBouncer) ou drivers serverless-ready (como o da Neon)
+Cold starts: A primeira requisição pode demorar alguns segundos
+Timeouts: Limite de 10s (Hobby) ou 60s-900s (Pro) por execução
+Resumo
+✅ Front-end: Sim, na Vercel
+✅ Back-end (API): Sim, na Vercel (Serverless/Edge Functions)
+❌ PostgreSQL: Não, use Neon, Supabase ou similar externamente
+✅ Integração: Sim, funciona perfeitamente com variáveis de ambiente
+Quer ajuda para escolher entre Neon ou Supabase, ou precisa de um exemplo de código específico?
+User:
+LAZINHO (1).pdf
+Em questão de cybersegurança eu vou precisar salvar os dados de cadastro do usuário pra eu poder gerar um pdf com os mesmos dados depois, tem alguma dica? eu consigo salvar esses dados só na hora de gerar o pdf e dps excluir? n queria arriscar de forma nenhuma vazar isso
+Kimi:
+Excelente preocupação! Dados como CPF, RG, endereço e filiação são sensíveis sob a LGPD, então essa cautela é fundamental. Sim, você pode adotar uma arquitetura “zero persistência” ou “processamento transitório”.
+Aqui está a estratégia de segurança recomendada, do mais seguro para o alternativo:
+Opção 1: Geração Client-Side (100% sem tocar seu servidor) ⭐ Mais Seguro
+Gere o PDF no navegador usando bibliotecas como pdf-lib.js ou jspdf. Os dados preenchidos no formulário nunca são enviados para seu backend.
+// Client-side apenas
+import { PDFDocument } from 'pdf-lib';
+
+async function gerarPDF(dados) {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage();
+  
+  // Preenche os campos...
+  page.drawText(dados.nome, { x: 50, y: 500 });
+  
+  const pdfBytes = await pdfDoc.save();
+  download(pdfBytes, "cadastro.pdf");
+}
+Vantagem: Seus servidores nunca veem os dados. Zero risco de vazamento no backend.
+Opção 2: Processamento Serverless Transitório (Sem persistência)
+Se precisar processar no servidor (templates complexos):
+// API Route na Vercel (Serverless)
+export default async function handler(req, res) {
+  const dados = req.body; // Recebe os dados
+  
+  // 1. Gera o PDF em memória (buffer), NUNCA salva em disco/banco
+  const pdfBuffer = await gerarPDF(dados);
+  
+  // 2. Envia para o cliente imediatamente
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', 'attachment; filename=cadastro.pdf');
+  res.send(pdfBuffer);
+  
+  // 3. Função termina aqui - dados saem da memória automaticamente
+  // Nenhum log, nenhum banco, nenhum cache
+}
+Pontos críticos: - ❌ Nunca salve em banco de dados (Postgres, Mongo, etc.) - ❌ Não escreva logs que contenham CPF/nome (console.log(dados) é proibido) - ❌ Desative logs de request body na Vercel/Cloudflare - ✅ Use apenas memória RAM durante a execução (dados morrem quando a função termina)
+Opção 3: Cache Temporário Criptografado (Se precisar de “rascunho”)
+Se o usuário precisar salvar para continuar depois:
+// Redis com TTL (Time To Live) + Criptografia
+const crypto = require('crypto');
+
+// Criptografa dados sensíveis antes de salvar
+function criptografar(texto, chave) {
+  const iv = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv('aes-256-gcm', chave, iv);
+  return iv + cipher.update(texto, 'utf8', 'hex') + cipher.final('hex');
+}
+
+// Salva por 5 minutos apenas
+await redis.setex(`temp:pdf:${userId}`, 300, criptografar(dadosJSON, process.env.KEY));
+Regras: - TTL automático: Máximo 5-15 minutos - Criptografia AES-256 antes de salvar - Chave diferente por sessão (não uma chave global) - Deleção imediata após download (redis.del())
+Checklist de Segurança Obrigatória
+1. Mascaramento em Logs
+// ❌ ERRADO
+console.log("Gerando PDF para:", dados.cpf); 
+
+// ✅ CERTO 
+console.log("Gerando PDF para:", hashCPF(dados.cpf)); // Mostra apenas hash/fingerprint
+2. Tokenização de Identificadores
+Se precisar rastrear o processo, não use CPF:
+const token = crypto.randomUUID(); // "550e8400-e29b-41d4-a716-446655440000"
+// Use token para rastrear, não o CPF real
+3. Headers de Segurança (Vercel/Next.js)
+// next.config.js
+module.exports = {
+  async headers() {
+    return [{
+      headers: [
+        { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate' }, // Impede cache
+        { key: 'Content-Security-Policy', value: "default-src 'self'" }
+      ]
+    }];
+  }
+};
+4. Sanitização de PDF
+Se o usuário pode anexar a foto 3x4 (como no modelo que você mostrou): - Verifique MIME type (apenas image/jpeg, image/png) - Remova metadados EXIF da imagem (pode conter GPS/localização) - Limite de tamanho (máx 2MB)
+LGPD: Bases Legais
+Como é um cadastro para sindicato (dados obrigatórios para filiação), você se ampara na base legal de cumprimento de obrigação legal/sindical (art. 7º, II da LGPD), mas precisa:
+Consentimento específico checkbox: “Autorizo o processamento temporário dos meus dados exclusivamente para geração deste documento”
+Finalidade explícita: Informar que dados são apagados em X minutos
+Direito ao esquecimento: Garantir que não há backup/retention invisível
+Arquitetura Recomendada para seu Caso
+Usuário preenche formulário
+       ↓
+[Client-Side] Validação
+       ↓
+[Serverless Function] 
+   - Recebe dados (HTTPS/TLS 1.3)
+   - Gera PDF em memória RAM
+   - Stream direto para download
+   - Variáveis limpas (garbage collector)
+       ↓
+Cliente recebe PDF
+       ↓
+[Dados nunca persistidos]
+Resumo: Evite salvar em Postgres/Redis se não for absolutamente necessário. Processamento stateless é o gold standard para dados sensíveis.
+Quer que eu mostre um exemplo de código completo usando a abordagem serverless transitória com Node.js?
+User:
+Certo, minha arquitetura vai ser focada em nao salvar nada, mas eu preciso de uma experiência boa pra quem ta afiliando ao sindicato, e as secretarias que preenchem os dados, exemplo, terminei de preencher, mas ta errado um número do telefone, preciso preencher tudo ee novo? nao quero q isso aconteça, como faço pra evitar isso
+Kimi:
+Perfeito! Você pode ter auto-save sem persistir no servidor. A solução é manter os dados no navegador (client-side) até o momento final de gerar o PDF.
+Aqui está a arquitetura que resolve isso:
+Estratégia: “Fort Knox Local”
+Os dados ficam apenas no localStorage ou sessionStorage do navegador da secretária, nunca trafegam para seu backend até o clique final em “Gerar PDF”.
+Fluxo:
+Secretária digita → Auto-save no navegador → Edita quantas vezes quiser → 
+Gera PDF → Limpa storage local → Dados somem para sempre
+Implementação Técnica
+1. Auto-save React Hook (ou Vanilla JS)
+// hooks/useFormAutoSave.js
+import { useEffect, useState } from 'react';
+
+export function useFormAutoSave(formKey) {
+  const [data, setData] = useState(() => {
+    // Recupera do localStorage ao carregar
+    const saved = localStorage.getItem(`sindicato_draft_${formKey}`);
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  useEffect(() => {
+    // Salva a cada alteração (debounce de 500ms ideal)
+    const timer = setTimeout(() => {
+      localStorage.setItem(`sindicato_draft_${formKey}`, JSON.stringify(data));
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, [data, formKey]);
+
+  const clearDraft = () => {
+    localStorage.removeItem(`sindicato_draft_${formKey}`);
+  };
+
+  return { data, setData, clearDraft };
+}
+
+// Uso no componente:
+function FormCadastro() {
+  const { data, setData, clearDraft } = useFormAutoSave('cadastro_lazinho');
+  
+  const handleChange = (e) => {
+    setData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+  
+  const gerarPDF = async () => {
+    // Envia dados para API gerar PDF
+    await fetch('/api/gerar-pdf', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+    
+    // LIMPA TUDO após download
+    clearDraft();
+  };
+  
+  return (
+    <input 
+      name="telefone" 
+      value={data.telefone || ''} 
+      onChange={handleChange}
+      placeholder="Telefone"
+    />
+  );
+}
+2. Criptografia Local (Opcional - se computador é compartilhado)
+Se a máquina da secretária for compartilhada, criptografe antes de salvar no navegador:
+// Criptografia simples com senha do dia
+const criptografarLocal = (dados, senha) => {
+  return CryptoJS.AES.encrypt(JSON.stringify(dados), senha).toString();
+};
+
+const descriptografarLocal = (cifrado, senha) => {
+  const bytes = CryptoJS.AES.decrypt(cifrado, senha);
+  return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+};
+
+// Ao salvar: criptografa
+localStorage.setItem('draft', criptografarLocal(dados, 'senha-do-dia-09-03'));
+
+// Ao ler: descriptografa
+const dados = descriptografarLocal(localStorage.getItem('draft'), 'senha-do-dia-09-03');
+3. UI/UX: Indicadores de Segurança
+Deixe claro para a secretária que é seguro:
+<div className="status-salvamento">
+  {lastSaved && (
+    <span className="text-green-600 text-sm">
+      ✓ Rascunho salvo localmente ({new Date(lastSaved).toLocaleTimeString()})
+      <br/>
+      <span className="text-xs text-gray-500">
+        Os dados não saem deste computador até gerar o PDF
+      </span>
+    </span>
+  )}
+</div>
+
+// Botão de emergência
+<button onClick={() => {
+  if(confirm('Apagar todos os dados do formulário?')) {
+    clearDraft();
+    window.location.reload();
+  }
+}} className="text-red-600">
+  Limpar Formulário
+</button>
+Opções de Storage
+Cenário Completo: “Errou o telefone”
+Secretária preenche CPF, Nome, Telefone errado (349999-9999)
+Auto-save no navegador a cada digitação
+Clica em “Gerar PDF” → vê o erro na preview
+Volta no formulário → Telefone ainda lá (está no localStorage)
+Corrige para (349992-1463)
+Gera PDF novamente
+Download concluído → clearDraft() → Storage limpo
+Segurança Reforçada: TTL (Time To Live)
+Adicione validade ao rascunho local:
+useEffect(() => {
+  const dados = localStorage.getItem('sindicato_draft');
+  if (dados) {
+    const { timestamp, content } = JSON.parse(dados);
+    // Se passou mais de 2 horas, apaga automaticamente
+    if (Date.now() - timestamp > 2 * 60 * 60 * 1000) {
+      localStorage.removeItem('sindicato_draft');
+      alert('Dados expirados por segurança. Preencha novamente.');
+    }
+  }
+}, []);
+Resumo da Arquitetura Segura
+┌─────────────────────────────────────┐
+│         Navegador (Client)          │
+│  ┌─────────────────────────────┐   │
+│  │  localStorage/IndexedDB     │   │
+│  │  • Dados criptografados     │   │
+│  │  • Auto-save a cada 500ms   │   │
+│  │  • TTL: 2 horas             │   │
+│  └─────────────────────────────┘   │
+│              ↓                      │
+│  Secretária edita à vontade         │
+│              ↓                      │
+│  Clique "Gerar PDF"                 │
+│              ↓                      │
+└──────────────┬──────────────────────┘
+               ↓ HTTPS
+┌─────────────────────────────────────┐
+│    Serverless Function (Vercel)    │
+│  • Recebe dados (stream)            │
+│  • Gera PDF em memória              │
+│  • Retorna arquivo                  │
+│  • NÃO SALVA NADA                   │
+└─────────────────────────────────────┘
+               ↓
+┌─────────────────────────────────────┐
+│  Navegador limpa localStorage       │
+│  (clearDraft() após download)       │
+└─────────────────────────────────────┘
+Vantagem: Mesmo que alguém invada seu servidor, não há dados lá. Estão todos na máquina da secretária, e só por alguns minutos.
+Quer que eu monte um componente React completo com essa lógica de auto-save + criptografia local?
+User:
+Certo, outra duvida, o cliente ainda vai ter usuário e senha, pra caso necessário, atualizar os dados ou acompanhar atualizações do sindicato, atualizar os dados n seria necessário, ja q n vamos salvar, mas o usuário precisa estar vinculado ao um pdf? como que é?
+Kimi:
+Ótima pergunta! Você identificou o ponto crucial: autenticação requer persistência mínima, mas podemos fazer um “isolamento de contextos” onde os dados de login são separados e anonimizados dos dados sensíveis do cadastro.
+Aqui está a arquitetura que resolve esse aparente paradoxo:
+Arquitetura: “Ponte Invisível”
+┌─────────────────┐         ┌──────────────────┐
+│   AUTH TABLE    │         │   PDF STORAGE    │
+│  (Persistente)  │         │  (Persistente)   │
+├─────────────────┤         ├──────────────────┤
+│ id (UUID)       │────────▶│ user_id (UUID)   │
+│ email           │         │ pdf_encrypted    │
+│ password_hash   │         │ created_at       │
+│ cpf_hash*       │────────▶│ metadata_hash    │
+└─────────────────┘         └──────────────────┘
+         │                            │
+         └────────────┬───────────────┘
+                      │
+               ┌──────▼──────┐
+               │    PDF      │
+               │  (Gerado)   │
+               └─────────────┘
+*CPF hasheado é irreversível, serve apenas como “dedo digital” para busca.
+O que SALVAR (mínimo necessário)
+Para ter login, você precisa persistir:
+-- Tabela mínima e segura
+CREATE TABLE affiliates (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email VARCHAR(255) UNIQUE, -- ou username
+    password_hash VARCHAR(255), -- bcrypt/argon2
+    cpf_hash VARCHAR(64), -- SHA-256 do CPF (irreversível)
+    created_at TIMESTAMP
+);
+Por que isso é seguro: - cpf_hash: Se vazar, não dá para descobrir o CPF original (função unidirecional) - Não há nome, endereço, RG, filiação nesta tabela - O email é considerado dado pessoal, mas de baixa criticidade (já é usado para login)
+O que NÃO SALVAR
+Os dados do formulário (Nome, Pai, Mãe, Endereço, RG, Telefone) nunca entram no banco. Eles vão direto para o PDF.
+Como fazer o vínculo?
+Opção 1: Hash do CPF como “DNA Digital”
+Quando a secretária preenche o cadastro:
+// No momento do cadastro (client-side)
+const cpfHash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(dados.cpf));
+const cpfHashHex = Array.from(new Uint8Array(cpfHash)).map(b => b.toString(16).padStart(2, '0')).join('');
+
+// Envia para criar usuário
+fetch('/api/criar-usuario', {
+  method: 'POST',
+  body: JSON.stringify({
+    email: dados.email,
+    password: dados.senha,
+    cpf_hash: cpfHashHex // Apenas o hash, não o CPF em si
+  })
+});
+
+// Gera PDF (dados completos vão aqui, mas não são salvos)
+fetch('/api/gerar-pdf', {
+  body: JSON.stringify({...dados, cpfHashHex}) // Vincula PDF ao hash
+});
+Benefício: Se alguém hackear o banco, verá apenas: - email: maria@gmail.com - cpf_hash: a3f5c8... (irreversível) - Não consegue saber que é o CPF 648.666.456-87
+Opção 2: Magic Links (sem senha salva)
+Se quiser eliminar até a senha:
+// Usuário entra apenas com email
+// Recebe link único por email: https://sindicato.com/acesso?token=xyz123
+
+// No banco:
+CREATE TABLE access_tokens (
+    token_hash VARCHAR(64) PRIMARY KEY,
+    user_id UUID,
+    expires_at TIMESTAMP,
+    used BOOLEAN DEFAULT false
+);
+O usuário clica no link e acessa o PDF por 24h. Nenhuma senha armazenada.
+Onde fica o PDF?
+Escolha A: Entrega única (Zero Storage)
+Gera o PDF → Download imediato → Descarta do servidor
+Usuário guarda o arquivo no computador dele
+Sistema fica apenas com: user_id + cpf_hash (para futura autenticação)
+Problema: Se perder o PDF, não tem como recuperar (mas é o mais seguro)
+Escolha B: Armazenamento Criptografado
+Se precisar manter disponível para download futuro:
+// Criptografia do PDF
+const userKey = await pbkdf2(password, salt, 100000, 256, 'sha256');
+const encryptedPDF = await aesEncrypt(pdfBuffer, userKey);
+
+// Salva no banco:
+// table: user_documents
+// - user_id: uuid
+// - file_data: encryptedPDF (bytes)
+// - created_at: timestamp
+Segurança: Mesmo que roubem o banco, o PDF está criptografado. Sem a senha do usuário, é inútil.
+Fluxo Completo: “Cadastro + Acompanhamento”
+1. Secretária preenche formulário
+         ↓
+2. Sistema calcula SHA-256 do CPF (anônimo)
+         ↓
+3. Cria usuário: {email, password_hash, cpf_hash}
+         ↓
+4. Gera PDF com dados completos + cpf_hash (para vínculo visual)
+         ↓
+5. Criptografa PDF com chave derivada do user_id
+         ↓
+6. Salva PDF cifrado no storage
+         ↓
+7. Usuário pode logar depois:
+   - Digita email/senha
+   - Sistema mostra: "Seu cadastro foi realizado em 09/03/2025"
+   - Permite download do PDF novamente (decripta na hora)
+   - Mostra avisos do sindicato (texto genérico, sem dados pessoais)
+LGPD: Checklist de conformidade
+Resposta direta à sua dúvida
+“Como o usuário está vinculado ao PDF se não salvamos os dados?”
+Você salva apenas uma “impressão digital” (hash) do CPF ou um ID aleatório (UUID) gerado no momento do cadastro. O PDF carrega esse mesmo identificador (invisível para o usuário, como metadado ou watermark), permitindo que o sistema saiba “este PDF pertence a este usuário” sem saber o conteúdo do PDF.
+Quando o usuário loga: 1. Sistema pega o hash do CPF dele 2. Busca PDFs com aquele hash 3. Retorna: “Você tem 1 cadastro ativo” (sem mostrar os dados) 4. Permite download do arquivo criptografado
+Isso mantém a promessa de “não salvamos seus dados pessoais”, apenas mantemos o “comprovante criptografado” vinculado à sua conta anônima.
+Qual dessas opções faz mais sentido para o fluxo do sindicato: o usuário guarda o PDF (entrega única) ou vocês precisam manter uma cópia para ele baixar depois?
+User:
+Mesmo nunca salvando o pdf original o usuário consegue baixar ele novamente?
+Kimi:
+Não. Se você não salva o PDF e não salva os dados, é impossível baixar novamente. Isso é uma lei da física digital: sem persistência, não há recuperação.
+Mas existe uma solução intermediária que mantém sua promessa de segurança:
+A Solução: “Cofre Digital”
+Você não salva os dados (nome, CPF, endereço), mas pode salvar o arquivo PDF criptografado como um “blob” opaco (um arquivo morto que só o usuário pode abrir).
+Como funciona:
+// 1. Gera o PDF (com todos os dados sensíveis)
+const pdfBytes = await gerarPDF(dadosCompletos);
+
+// 2. Deriva uma chave da senha do usuário (ele precisa criar uma senha no cadastro)
+const chave = await pbkdf2(senhaDoUsuario, salt, 100000, 32, 'sha256');
+
+// 3. Criptografa o PDF inteiro (AES-256)
+const pdfCriptografado = await aesEncrypt(pdfBytes, chave);
+
+// 4. Salva NO BANCO apenas isso:
+// tabela: documentos
+// - user_id: uuid
+// - file_blob: pdfCriptografado (ilegível sem a senha)
+// - created_at: timestamp
+// - filename_hash: hash(nome_arquivo) (para identificar sem sabber o conteúdo)
+O que está no seu banco: - Um arquivo binário criptografado (parece lixo aleatório) - Sem a senha do usuário, é impossível abrir - Você não sabe o que tem dentro (nem nome, nem CPF, nada)
+Quando o usuário loga: 1. Ele digita a senha 2. Sistema pega o blob criptografado do banco 3. Descriptografa no navegador (client-side) usando a senha dele 4. Ele baixa o PDF legível novamente
+Por que isso é seguro?
+Sem a senha do usuário (que nunca sai do navegador durante a descriptografia), o PDF é inútil.
+Alternativa: “Download Único + Responsabilidade do Usuário”
+Se quiser manter a promessa de “não guardamos nada, absolutamente nada”:
+⚠️ AVISO NA TELA:
+"Baixe o PDF agora. Não salvamos cópias por segurança. 
+Se perder o arquivo, precisará fazer um novo cadastro na secretaria."
+Vantagens: - Zero risco de vazamento (não existe o que vazar) - Custo zero de storage - Compliance total com LGPD (você literalmente não tem os dados)
+Desvantagens: - Se o usuário perde o celular/computador, perde o comprovante - Mas isso é um recurso de segurança, não um bug
+Recomendação para o Sindicato
+Dado que é um documento oficial de cadastro sindical, eu sugiro a Solução do Cofre Digital (PDF criptografado), porque:
+O usuário provavelmente vai perder o arquivo entre o cadastro e a necessidade de usá-lo (pode ser meses depois)
+Você não precisa dos dados em texto, só do arquivo “fechado”
+A chave está com o usuário (zero responsabilidade legal para o sindicato em caso de vazamento)
+Resumo técnico: - ❌ Não salvar dados estruturados (nome, CPF, etc) = Segurança máxima - ✅ Pode salvar arquivo criptografado = Conveniência para o usuário - 🔑 Chave apenas com o usuário = Privacidade garantida
+Quer que eu mostre o código completo de como fazer essa criptografia client-side (a senha nunca chega ao servidor)?
+User:
+Quero que você gere um resumo com o pdf criptografado em banco, e quais tecnologias vamos utilizar principalmente na segurança, a senha vai ser salva criptografada? como q vai funcionar e etc
+Kimi:
+Resumo da Arquitetura de Segurança - Sistema SDTMA
+1. Visão Geral: “Cofre de Vidro”
+Você guarda o PDF criptografado (ilegível) mas não guarda os dados (nome, CPF, etc). É como ter um cofre opaco onde você não sabe o que tem dentro, mas o dono da chave pode abrir quando quiser.
+2. Tecnologias de Segurança Principais
+3. Como Funciona a Senha (Hash ≠ Criptografia)
+O que é salvo no banco:
+Senha digitada: "Maria123!"
+↓
+bcrypt("Maria123!") = "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/X4.VTtYA.qGZvKG6G"
+Características: - Irreversível: Não dá para descobrir “Maria123!” olhando o hash - Único: Cada usuário tem um hash diferente mesmo com a mesma senha (salts aleatórios) - Lento: bcrypt consome tempo de propósito (dificulta brute force)
+O que NUNCA acontece:
+❌ Salvar senha em texto puro
+❌ Salvar senha “criptografada” (criptografia é reversível, hash não)
+❌ Enviar senha por email
+4. Estrutura do Banco (Mínima)
+-- Tabela 1: Autenticação (não contém dados pessoais)
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL, -- bcrypt
+    cpf_hash VARCHAR(64) UNIQUE, -- SHA-256 para busca sem expor CPF
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Tabela 2: Documentos (blobs criptografados)
+CREATE TABLE documents (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id),
+    encrypted_blob BYTEA NOT NULL, -- PDF criptografado (ilegível)
+    iv VARCHAR(32) NOT NULL, -- Vetor de inicialização AES
+    salt VARCHAR(32) NOT NULL, -- Salt do PBKDF2
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP
+);
+
+-- Índice para performance (não expõe dados)
+CREATE INDEX idx_docs_user ON documents(user_id);
+O que NÃO existe neste banco: - Coluna nome, endereco, telefone, rg - CPF em texto - PDF em texto (apenas criptografado)
+5. Fluxo Completo: Cadastro → Download
+ETAPA 1: Cadastro (Secretaria)
+// 1. Coleta dados (formulário)
+const dados = {
+  nome: "Claudia Maria",
+  cpf: "648.666.456-87",
+  // ... todos os outros campos
+  senha: "Segura@2025" // Criada no momento do cadastro
+};
+
+// 2. Gera PDF em memória (Serverless)
+const pdfBuffer = await gerarPDF(dados);
+
+// 3. Deriva chave criptográfica da senha
+const salt = crypto.randomBytes(16);
+const chaveAES = await pbkdf2(dados.senha, salt, 100000, 32, 'sha256');
+
+// 4. Criptografa o PDF
+const iv = crypto.randomBytes(16);
+const cipher = crypto.createCipheriv('aes-256-gcm', chaveAES, iv);
+const encryptedPDF = Buffer.concat([cipher.update(pdfBuffer), cipher.final()]);
+const authTag = cipher.getAuthTag(); // Garante integridade
+
+// 5. Prepara dados para banco
+const userData = {
+  email: dados.email,
+  password_hash: await bcrypt.hash(dados.senha, 12), // Para login
+  cpf_hash: sha256(dados.cpf) // Para busca futura
+};
+
+const docData = {
+  encrypted_blob: encryptedPDF,
+  iv: iv.toString('hex'),
+  salt: salt.toString('hex'),
+  auth_tag: authTag.toString('hex')
+};
+
+// 6. Salva no PostgreSQL (dados sensíveis são descartados da memória)
+await db.query('INSERT INTO users...', userData);
+await db.query('INSERT INTO documents...', docData);
+
+// 7. LIMPA tudo (GC remove dados da RAM)
+dados = null; 
+pdfBuffer = null;
+chaveAES = null;
+ETAPA 2: Login + Download (Associado)
+// 1. Usuário digita email/senha
+const { email, senha } = req.body;
+
+// 2. Busca usuário
+const user = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+
+// 3. Valida senha (compara hash)
+const valido = await bcrypt.compare(senha, user.password_hash);
+if (!valido) return erro(401);
+
+// 4. Busca documento criptografado
+const doc = await db.query('SELECT * FROM documents WHERE user_id = $1', [user.id]);
+
+// 5. DERIVA a mesma chave usando a senha digitada + salt salvo
+const salt = Buffer.from(doc.salt, 'hex');
+const chaveAES = await pbkdf2(senha, salt, 100000, 32, 'sha256');
+
+// 6. DECRIPTOGRAFA no servidor (ou envia para client-side)
+const decipher = crypto.createDecipheriv('aes-256-gcm', chaveAES, Buffer.from(doc.iv, 'hex'));
+decipher.setAuthTag(Buffer.from(doc.auth_tag, 'hex'));
+const pdfOriginal = Buffer.concat([decipher.update(doc.encrypted_blob), decipher.final()]);
+
+// 7. Envia para download
+res.setHeader('Content-Type', 'application/pdf');
+res.send(pdfOriginal);
+
+// 8. LIMPA memória
+pdfOriginal.fill(0); // Sobrescreve com zeros (secure wipe)
+6. Seguranças Adicionais Implementadas
+A. Segurança na Transmissão
+// Headers obrigatórios na Vercel
+res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+res.setHeader('X-Content-Type-Options', 'nosniff');
+res.setHeader('Cache-Control', 'no-store, private'); // Nunca cacheia PDFs
+B. Proteção contra SQL Injection
+Uso obrigatório de parameterized queries ($1, $2)
+Nunca concatenar strings SQL
+C. Rate Limiting
+// Limita tentativas de login
+import { Ratelimit } from "@upstash/ratelimit";
+
+const ratelimit = new Ratelimit({
+  redis: redis,
+  limiter: Ratelimit.slidingWindow(5, "1 m") // 5 tentativas/minuto
+});
+D. Sanitização de Inputs
+Email: validação regex rigorosa
+Upload de foto (se houver): verificação MIME type, remoção EXIF, resize forçado
+7. Cenário de Ataque: O que acontece se…
+8. Checklist LGPD Compliance
+☒ Minimização: Apenas email e hash são persistidos
+☒ Integridade: AuthTag do AES-GCM detecta qualquer alteração no PDF
+☒ Confidencialidade: Criptografia de ponta a ponta
+☒ Disponibilidade: Usuário pode baixar quando quiser (com sua senha)
+☒ Consentimento: Checkbox no cadastro autorizando processamento
+☒ Direito ao esquecimento: DELETE CASCADE remove user + documentos
+Resumo em uma frase:
+Você guarda apenas “cofres trancados” (PDFs criptografados) e “chaves de cofre codificadas” (hashes de senha). Quem tem a senha original abre o cofre, quem não tem vê apenas metal.
+Quer que eu gere o código SQL completo para criar as tabelas ou prefere ver a implementação da função de criptografia em Node.js primeiro?

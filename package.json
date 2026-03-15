@@ -1,0 +1,27 @@
+{
+  "name": "sdtm-backend",
+  "version": "1.0.0",
+  "description": "Backend SDTM - Arquitetura Cofre de Vidro",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod",
+    "db:migrate": "node sql/migrate.js"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.9.0",
+    "@upstash/ratelimit": "^1.0.0",
+    "@upstash/redis": "^1.28.0",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^17.3.1",
+    "jsonwebtoken": "^9.0.2",
+    "pdf-lib": "^1.17.1",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "vercel": "^33.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
