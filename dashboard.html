@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="pt-BR" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <title>Painel do Associado - SDTM</title>
+    <meta name="description" content="Painel do associado do Sindicato dos Despachantes do Triângulo Mineiro." />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Outfit', 'system-ui', 'sans-serif'],
+              serif: ['Playfair Display', 'Georgia', 'serif'],
+            },
+            colors: {
+              brand: {
+                50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1',
+                400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#1e293b',
+                800: '#0f172a', 900: '#020617',
+                primary: '#1e40af', accent: '#dc2626', gold: '#d4af37', success: '#10b981',
+              }
+            },
+          }
+        }
+      }
+    </script>
+    <style>
+      .glass { background: rgba(255,255,255,0.8); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+      .card { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border: 1px solid rgba(226,232,240,0.8); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+      .modal-overlay { background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); }
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #f1f5f9; }
+      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+      *:focus-visible { outline: 2px solid #1e40af; outline-offset: 2px; }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+      }
+    </style>
+  </head>
+  <body class="font-sans text-slate-900 antialiased bg-slate-50 min-h-screen">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 glass border-b border-slate-200/50">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <a href="index.html" class="flex items-center gap-3 group">
+            <img src="assets/img/logo/logo-mapa.png" alt="SDTM" class="w-10 h-10 object-contain group-hover:scale-105 transition-transform" />
+            <div class="flex flex-col">
+              <span class="font-serif font-bold text-lg text-brand-800 leading-none">SDTM</span>
+              <span class="text-[9px] uppercase tracking-[0.2em] font-semibold text-brand-500">Painel do Associado</span>
+            </div>
+          </a>
+          <div class="flex items-center gap-4">
+            <span id="headerEmail" class="hidden sm:block text-sm text-brand-500 truncate max-w-[200px]"></span>
+            <button onclick="handleLogout()" class="px-4 py-2 text-sm font-medium text-brand-accent hover:text-red-700 border border-brand-200 rounded-xl hover:bg-red-50 transition-all">
+              Sair
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="flex items-center justify-center py-32">
+      <div class="text-center space-y-4">
+        <svg class="animate-spin w-10 h-10 text-brand-primary mx-auto" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <p class="text-brand-500">Carregando seus dados...</p>
+      </div>
+    </div>
+
+    <!-- Main Content (hidden until loaded) -->
+    <main id="mainContent" class="hidden max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+      <!-- Welcome -->
+      <div class="space-y-1">
+        <h1 class="font-serif text-3xl font-bold text-brand-800">Bem-vindo</h1>
+        <p class="text-brand-500">
+          <span id="userEmail" class="font-medium text-brand-700"></span>
+          &bull; Membro desde <span id="memberSince"></span>
+        </p>
+      </div>
+
+      <!-- Documents Card -->
+      <section class="card rounded-2xl p-6 sm:p-8">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="font-serif text-xl font-bold text-brand-800">Seus Documentos</h2>
+          <div class="flex items-center gap-2 text-xs text-brand-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            Criptografados com AES-256
+          </div>
+        </div>
+
+        <!-- Documents Table -->
+        <div id="documentsTable" class="hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-slate-200">
+                  <th class="text-left py-3 px-2 font-semibold text-brand-600">Documento</th>
+                  <th class="text-left py-3 px-2 font-semibold text-brand-600">Criado em</th>
+                  <th class="text-left py-3 px-2 font-semibold text-brand-600 hidden sm:table-cell">Último Download</th>
+                  <th class="text-right py-3 px-2 font-semibold text-brand-600">Ação</th>
+                </tr>
+              </thead>
+              <tbody id="documentsList"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="documentsEmpty" class="hidden text-center py-12">
+          <svg class="w-12 h-12 text-brand-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <p class="text-brand-500">Nenhum documento encontrado.</p>
+        </div>
+      </section>
+
+      <!-- Settings Card -->
+      <section class="card rounded-2xl p-6 sm:p-8">
+        <h2 class="font-serif text-xl font-bold text-brand-800 mb-6">Configurações</h2>
+
+        <!-- Change Password -->
+        <div class="mb-8 pb-8 border-b border-slate-100">
+          <h3 class="font-semibold text-brand-700 mb-1">Alterar Senha</h3>
+          <p class="text-sm text-brand-500 mb-4">Ao alterar a senha, todos os seus documentos serão re-criptografados com a nova chave.</p>
+          <form id="changePasswordForm" class="space-y-4 max-w-md">
+            <div>
+              <label for="currentPassword" class="block text-sm font-medium text-brand-700 mb-1">Senha Atual</label>
+              <input type="password" id="currentPassword" required minlength="8" placeholder="Sua senha atual"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/10" />
+            </div>
+            <div>
+              <label for="newPassword" class="block text-sm font-medium text-brand-700 mb-1">Nova Senha</label>
+              <input type="password" id="newPassword" required minlength="8" placeholder="Mínimo 8 caracteres"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/10" />
+            </div>
+            <div>
+              <label for="confirmNewPassword" class="block text-sm font-medium text-brand-700 mb-1">Confirmar Nova Senha</label>
+              <input type="password" id="confirmNewPassword" required minlength="8" placeholder="Repita a nova senha"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/10" />
+            </div>
+            <button type="submit" id="changePassBtn"
+              class="px-6 py-3 bg-brand-800 text-white font-semibold rounded-xl hover:bg-brand-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+              Alterar Senha
+            </button>
+          </form>
+        </div>
+
+        <!-- Danger Zone -->
+        <div>
+          <h3 class="font-semibold text-brand-accent mb-1">Zona de Perigo</h3>
+          <p class="text-sm text-brand-500 mb-4">Ao excluir sua conta, todos os seus dados e documentos serão removidos permanentemente. Esta ação não pode ser desfeita (LGPD - direito ao esquecimento).</p>
+          <button onclick="openDeleteModal()"
+            class="px-6 py-3 bg-white text-brand-accent font-semibold rounded-xl border-2 border-brand-accent/30 hover:bg-red-50 hover:border-brand-accent transition-all">
+            Excluir Minha Conta
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Download Modal -->
+    <div id="downloadModal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
+      <div class="modal-overlay absolute inset-0" onclick="closeDownloadModal()"></div>
+      <div class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 space-y-6">
+        <h3 class="font-serif text-xl font-bold text-brand-800">Baixar Documento</h3>
+        <p class="text-sm text-brand-500">Insira sua senha para descriptografar e baixar o PDF.</p>
+        <input type="password" id="downloadPassword" placeholder="Sua senha"
+          class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/10" />
+        <input type="hidden" id="downloadDocId" />
+        <div class="flex gap-3 justify-end">
+          <button onclick="closeDownloadModal()" class="px-5 py-2.5 text-sm font-medium text-brand-600 hover:text-brand-800 rounded-xl transition-colors">Cancelar</button>
+          <button onclick="downloadPDF()" id="downloadBtn"
+            class="px-5 py-2.5 text-sm font-semibold text-white bg-brand-primary rounded-xl hover:bg-blue-700 transition-all disabled:opacity-50">
+            <span id="downloadBtnText">Baixar PDF</span>
+            <span id="downloadBtnLoading" class="hidden">Descriptografando...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Account Modal -->
+    <div id="deleteModal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
+      <div class="modal-overlay absolute inset-0" onclick="closeDeleteModal()"></div>
+      <div class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 space-y-6">
+        <h3 class="font-serif text-xl font-bold text-brand-accent">Excluir Conta Permanentemente</h3>
+        <p class="text-sm text-brand-600">Esta ação irá remover sua conta, todos os documentos e dados associados. <strong>Não é possível desfazer.</strong></p>
+        <input type="password" id="deletePassword" placeholder="Confirme sua senha para excluir"
+          class="w-full px-4 py-3 rounded-xl border border-red-200 focus:border-brand-accent focus:outline-none focus:ring-2 focus:ring-red-100" />
+        <div class="flex gap-3 justify-end">
+          <button onclick="closeDeleteModal()" class="px-5 py-2.5 text-sm font-medium text-brand-600 hover:text-brand-800 rounded-xl transition-colors">Cancelar</button>
+          <button onclick="deleteAccount()" id="deleteBtn"
+            class="px-5 py-2.5 text-sm font-semibold text-white bg-brand-accent rounded-xl hover:bg-red-700 transition-all disabled:opacity-50">
+            Excluir Permanentemente
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-[300] space-y-3" role="status" aria-live="polite"></div>
+
+    <script>
+      const API_BASE = '';
+      const token = localStorage.getItem('sdtm_token');
+
+      // Auth guard
+      if (!token) {
+        window.location.href = 'login.html';
+      }
+
+      function authHeaders() {
+        return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
+      }
+
+      // Toast
+      function showToast(message, type = 'error') {
+        const toast = document.createElement('div');
+        const bg = type === 'success' ? 'bg-emerald-500' : 'bg-red-500';
+        const icon = type === 'success'
+          ? '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>'
+          : '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+        toast.className = `${bg} text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 transform translate-y-10 opacity-0 transition-all duration-300 min-w-[280px]`;
+        toast.innerHTML = `${icon}<span class="font-medium">${message}</span>`;
+        document.getElementById('toastContainer').appendChild(toast);
+        requestAnimationFrame(() => toast.classList.remove('translate-y-10', 'opacity-0'));
+        setTimeout(() => { toast.classList.add('translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4000);
+      }
+
+      // Format date
+      function formatDate(dateStr) {
+        if (!dateStr) return '—';
+        return new Date(dateStr).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      }
+
+      // Load profile
+      async function loadProfile() {
+        try {
+          const res = await fetch(`${API_BASE}/api/user/profile`, { headers: authHeaders() });
+          if (res.status === 401) {
+            localStorage.removeItem('sdtm_token');
+            window.location.href = 'login.html';
+            return;
+          }
+          if (!res.ok) throw new Error('Erro ao carregar perfil');
+
+          const data = await res.json();
+
+          document.getElementById('headerEmail').textContent = data.email;
+          document.getElementById('userEmail').textContent = data.email;
+          document.getElementById('memberSince').textContent = formatDate(data.createdAt);
+
+          if (data.documents && data.documents.length > 0) {
+            document.getElementById('documentsTable').classList.remove('hidden');
+            const tbody = document.getElementById('documentsList');
+            tbody.innerHTML = data.documents.map((doc, i) => `
+              <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                <td class="py-4 px-2">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                      <svg class="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </div>
+                    <span class="font-medium text-brand-800">Ficha Cadastral ${data.documents.length > 1 ? '#' + (i + 1) : ''}</span>
+                  </div>
+                </td>
+                <td class="py-4 px-2 text-brand-500">${formatDate(doc.createdAt)}</td>
+                <td class="py-4 px-2 text-brand-500 hidden sm:table-cell">${doc.lastDownload ? formatDate(doc.lastDownload) : 'Nunca'}</td>
+                <td class="py-4 px-2 text-right">
+                  <button onclick="openDownloadModal('${doc.id}')"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-brand-primary bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    Baixar PDF
+                  </button>
+                </td>
+              </tr>
+            `).join('');
+          } else {
+            document.getElementById('documentsEmpty').classList.remove('hidden');
+          }
+
+          document.getElementById('loadingState').classList.add('hidden');
+          document.getElementById('mainContent').classList.remove('hidden');
+        } catch (err) {
+          showToast('Erro ao carregar dados. Tente novamente.');
+        }
+      }
+
+      // Download modal
+      function openDownloadModal(docId) {
+        document.getElementById('downloadDocId').value = docId;
+        document.getElementById('downloadPassword').value = '';
+        const modal = document.getElementById('downloadModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.getElementById('downloadPassword').focus();
+      }
+      function closeDownloadModal() {
+        const modal = document.getElementById('downloadModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+
+      async function downloadPDF() {
+        const docId = document.getElementById('downloadDocId').value;
+        const password = document.getElementById('downloadPassword').value;
+        if (!password) { showToast('Insira sua senha.'); return; }
+
+        const btn = document.getElementById('downloadBtn');
+        btn.disabled = true;
+        document.getElementById('downloadBtnText').classList.add('hidden');
+        document.getElementById('downloadBtnLoading').classList.remove('hidden');
+
+        try {
+          const res = await fetch(`${API_BASE}/api/pdf/download`, {
+            method: 'POST',
+            headers: authHeaders(),
+            body: JSON.stringify({ documentId: docId, password }),
+          });
+
+          if (!res.ok) {
+            const err = await res.json();
+            showToast(err.error || 'Senha incorreta ou erro ao baixar.');
+            return;
+          }
+
+          const blob = await res.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `ficha-sdtm-${docId.slice(0, 8)}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+
+          closeDownloadModal();
+          showToast('Documento baixado com sucesso!', 'success');
+        } catch (err) {
+          showToast('Erro de conexão. Tente novamente.');
+        } finally {
+          btn.disabled = false;
+          document.getElementById('downloadBtnText').classList.remove('hidden');
+          document.getElementById('downloadBtnLoading').classList.add('hidden');
+        }
+      }
+
+      // Change password
+      document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmNew = document.getElementById('confirmNewPassword').value;
+
+        if (newPassword !== confirmNew) { showToast('As senhas novas não coincidem.'); return; }
+        if (newPassword.length < 8) { showToast('A nova senha deve ter no mínimo 8 caracteres.'); return; }
+
+        const btn = document.getElementById('changePassBtn');
+        btn.disabled = true;
+        btn.textContent = 'Alterando...';
+
+        try {
+          const res = await fetch(`${API_BASE}/api/user/change-password`, {
+            method: 'POST',
+            headers: authHeaders(),
+            body: JSON.stringify({ currentPassword, newPassword }),
+          });
+          const data = await res.json();
+          if (!res.ok) { showToast(data.error || 'Erro ao alterar senha.'); return; }
+
+          showToast('Senha alterada com sucesso! Seus documentos foram re-criptografados.', 'success');
+          this.reset();
+        } catch (err) {
+          showToast('Erro de conexão. Tente novamente.');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Alterar Senha';
+        }
+      });
+
+      // Delete account
+      function openDeleteModal() {
+        document.getElementById('deletePassword').value = '';
+        const modal = document.getElementById('deleteModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.getElementById('deletePassword').focus();
+      }
+      function closeDeleteModal() {
+        const modal = document.getElementById('deleteModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+
+      async function deleteAccount() {
+        const password = document.getElementById('deletePassword').value;
+        if (!password) { showToast('Insira sua senha para confirmar.'); return; }
+
+        const btn = document.getElementById('deleteBtn');
+        btn.disabled = true;
+        btn.textContent = 'Excluindo...';
+
+        try {
+          const res = await fetch(`${API_BASE}/api/user/delete-account`, {
+            method: 'DELETE',
+            headers: authHeaders(),
+            body: JSON.stringify({ password }),
+          });
+          const data = await res.json();
+          if (!res.ok) { showToast(data.error || 'Erro ao excluir conta.'); btn.disabled = false; btn.textContent = 'Excluir Permanentemente'; return; }
+
+          localStorage.removeItem('sdtm_token');
+          showToast('Conta excluída permanentemente.', 'success');
+          setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+        } catch (err) {
+          showToast('Erro de conexão. Tente novamente.');
+          btn.disabled = false;
+          btn.textContent = 'Excluir Permanentemente';
+        }
+      }
+
+      // Logout
+      async function handleLogout() {
+        try {
+          await fetch(`${API_BASE}/api/auth/logout`, { method: 'POST', headers: authHeaders() });
+        } catch (e) {}
+        localStorage.removeItem('sdtm_token');
+        window.location.href = 'login.html';
+      }
+
+      // Enter key on download modal
+      document.getElementById('downloadPassword').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); downloadPDF(); }
+      });
+      document.getElementById('deletePassword').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); deleteAccount(); }
+      });
+
+      // Init
+      loadProfile();
+    </script>
+  </body>
+</html>

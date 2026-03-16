@@ -12,7 +12,12 @@ async function handler(req, res) {
     return res.status(400).json({ error: 'Dados invalidos', details: validation.errors });
   }
 
-  const { email, password, cpf, dadosCadastro } = validation.data;
+  const { username, email, password, cpf, dadosCadastro } = validation.data;
+
+  const existingUsername = await db.query('SELECT id FROM users WHERE username = $1', [username]);
+  if (existingUsername.rows.length > 0) {
+    return res.status(409).json({ error: 'Usuario ja esta em uso' });
+  }
 
   const existing = await db.query('SELECT id FROM users WHERE email = $1', [email]);
   if (existing.rows.length > 0) {
@@ -36,8 +41,8 @@ async function handler(req, res) {
       await client.query('BEGIN');
 
       const userResult = await client.query(
-        'INSERT INTO users (email, password_hash, cpf_hash) VALUES ($1, $2, $3) RETURNING id',
-        [email, passwordHash, cpfHash]
+        'INSERT INTO users (username, email, password_hash, cpf_hash) VALUES ($1, $2, $3, $4) RETURNING id',
+        [username, email, passwordHash, cpfHash]
       );
       const userId = userResult.rows[0].id;
 

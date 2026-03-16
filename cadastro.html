@@ -3,8 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="favicon.png" />
     <title>Cadastro de Associado - SDTM</title>
-    <meta name="description" content="Cadastre-se como associado do Sindicato dos Despachantes do Triangulo Mineiro." />
+    <meta name="description" content="Cadastre-se como associado do Sindicato dos Despachantes do Triângulo Mineiro." />
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -197,13 +198,7 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
           <a href="index.html" class="flex items-center gap-3 group">
-            <div class="w-10 h-10 relative">
-              <svg viewBox="0 0 100 100" class="w-full h-full">
-                <path d="M 5,95 V 5 H 95 L 90,8 Q 80,10 75,15 T 60,30 Q 55,40 50,45 L 65,60 T 80,75 Q 90,85 95,90 Z" 
-                      stroke="#dc2626" stroke-width="4" fill="none"/>
-                <text x="32" y="42" font-family="Playfair Display" font-weight="700" font-size="10" fill="#0f172a">SDTM</text>
-              </svg>
-            </div>
+            <img src="assets/img/logo/logo-mapa.png" alt="SDTM" class="w-10 h-10 object-contain group-hover:scale-105 transition-transform" />
             <div class="hidden sm:block">
               <span class="font-serif font-bold text-lg text-brand-800">SDTM</span>
               <span class="text-[10px] uppercase tracking-wider text-brand-500 block -mt-1">Triângulo Mineiro</span>
@@ -589,12 +584,34 @@
                 </div>
                 
                 <div>
+                  <label for="ufResidencial" class="block text-sm font-medium text-brand-700 mb-1.5">
+                    UF
+                  </label>
+                  <select
+                    id="ufResidencial"
+                    name="ufResidencial"
+                    class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none bg-white"
+                  >
+                    <option value="">UF</option>
+                    <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
+                    <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
+                    <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
+                    <option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+                    <option value="MG" selected>MG</option><option value="PA">PA</option><option value="PB">PB</option>
+                    <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option>
+                    <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
+                    <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+                    <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+                  </select>
+                </div>
+
+                <div>
                   <label for="cep" class="block text-sm font-medium text-brand-700 mb-1.5">
                     CEP
                   </label>
-                  <input 
-                    type="text" 
-                    id="cep" 
+                  <input
+                    type="text"
+                    id="cep"
                     name="cep"
                     maxlength="9"
                     placeholder="00000-000"
@@ -869,7 +886,7 @@
                     id="senha" 
                     name="senha"
                     required
-                    minlength="6"
+                    minlength="8"
                     maxlength="15"
                     placeholder="••••••"
                     class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none pr-12"
@@ -889,7 +906,7 @@
                   </button>
                 </div>
                 <p class="text-xs text-brand-500 mt-1.5">
-                  Use 6 a 15 caracteres (apenas letras e números)
+                  Use no mínimo 8 caracteres
                 </p>
                 
                 <!-- Password Strength Indicator -->
@@ -915,7 +932,7 @@
                     id="confirmarSenha" 
                     name="confirmarSenha"
                     required
-                    minlength="6"
+                    minlength="8"
                     maxlength="15"
                     placeholder="••••••"
                     class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none pr-12"
@@ -1163,7 +1180,7 @@
       
       function checkPasswordStrength(password) {
         let score = 0;
-        if (password.length >= 6) score++;
+        if (password.length >= 8) score++;
         if (password.length >= 10) score++;
         if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
         if (/\d/.test(password)) score++;
@@ -1195,34 +1212,47 @@
       });
       
       // Verificar disponibilidade do usuário (mock)
-      function verificarDisponibilidade() {
+      async function verificarDisponibilidade() {
         const usuario = document.getElementById('usuario').value.trim();
         const status = document.getElementById('usuarioStatus');
-        
+
         if (usuario.length < 4) {
           status.textContent = 'O usuário deve ter pelo menos 4 caracteres.';
           status.className = 'text-sm mt-2 text-red-500';
           status.classList.remove('hidden');
           return;
         }
-        
-        // Simulate API check
+
+        if (!/^[a-zA-Z0-9_]+$/.test(usuario)) {
+          status.textContent = 'Use apenas letras, números e _ (underline).';
+          status.className = 'text-sm mt-2 text-red-500';
+          status.classList.remove('hidden');
+          return;
+        }
+
         status.textContent = 'Verificando...';
         status.className = 'text-sm mt-2 text-brand-500';
         status.classList.remove('hidden');
-        
-        setTimeout(() => {
-          // Mock: usuario "admin" ou "teste" já existe
-          const taken = ['admin', 'teste', 'sdtm', 'despachante'].includes(usuario.toLowerCase());
-          
-          if (taken) {
-            status.textContent = 'Este usuário já está em uso. Tente outro.';
-            status.className = 'text-sm mt-2 text-red-500';
-          } else {
+
+        try {
+          const res = await fetch('/api/auth/check-username', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: usuario }),
+          });
+          const data = await res.json();
+
+          if (data.available) {
             status.textContent = 'Usuário disponível!';
             status.className = 'text-sm mt-2 text-emerald-500';
+          } else {
+            status.textContent = 'Este usuário já está em uso. Tente outro.';
+            status.className = 'text-sm mt-2 text-red-500';
           }
-        }, 800);
+        } catch (err) {
+          status.textContent = 'Erro ao verificar. Tente novamente.';
+          status.className = 'text-sm mt-2 text-red-500';
+        }
       }
       
       // Cancelar cadastro
@@ -1295,27 +1325,42 @@
         const cpfRaw = document.getElementById('cpf').value.replace(/\D/g, '');
         const emailVal = document.getElementById('emailPessoal').value || document.getElementById('emailComercial').value;
 
+        const val = (id) => document.getElementById(id)?.value || '';
         const dadosCadastro = {
-          numeroInscricao: document.getElementById('numeroInscricao').value,
-          nome: document.getElementById('nome').value,
-          pai: document.getElementById('pai').value,
-          mae: document.getElementById('mae').value,
+          numeroInscricao: val('numeroInscricao'),
+          nome: val('nome'),
+          pai: val('pai'),
+          mae: val('mae'),
           cpf: document.getElementById('cpf').value,
-          rg: document.getElementById('rg').value,
-          ssp: document.getElementById('ssp').value,
-          estadoCivil: document.getElementById('estadoCivil').value,
-          dataNascimento: document.getElementById('dataNascimento').value,
-          naturalidade: document.getElementById('naturalidade').value,
-          nacionalidade: document.getElementById('nacionalidade').value,
-          endereco: document.getElementById('endereco').value,
-          bairro: document.getElementById('bairro').value,
-          cidade: document.getElementById('cidade').value,
-          cep: document.getElementById('cep').value,
-          celular: document.getElementById('celular').value,
-          empresa: document.getElementById('cidadeAtuacao')?.value || '',
-          cnpj: document.getElementById('credenciamentoDetran')?.value || '',
-          enderecoComercial: document.getElementById('enderecoComercial').value,
-          telefoneComercial: document.getElementById('telefoneComercial').value,
+          rg: val('rg'),
+          ssp: val('ssp'),
+          estadoCivil: val('estadoCivil'),
+          dataNascimento: val('dataNascimento'),
+          naturalidade: val('naturalidade'),
+          ufNaturalidade: val('ufNaturalidade'),
+          nacionalidade: val('nacionalidade'),
+          grauInstrucao: val('grauInstrucao'),
+          tituloEleitor: val('tituloEleitor'),
+          zona: val('zona'),
+          secao: val('secao'),
+          endereco: val('endereco'),
+          bairro: val('bairro'),
+          cidade: val('cidade'),
+          uf: val('ufResidencial'),
+          cep: val('cep'),
+          telefone: val('telefone'),
+          celular: val('celular'),
+          emailPessoal: val('emailPessoal'),
+          enderecoComercial: val('enderecoComercial'),
+          bairroComercial: val('bairroComercial'),
+          cidadeComercial: val('cidadeComercial'),
+          cepComercial: val('cepComercial'),
+          telefoneComercial: val('telefoneComercial'),
+          fax: val('fax'),
+          emailComercial: val('emailComercial'),
+          cidadeAtuacao: val('cidadeAtuacao'),
+          credenciamentoDetran: val('credenciamentoDetran'),
+          despachanteArea: val('despachanteArea'),
         };
 
         try {
@@ -1323,6 +1368,7 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+              username: document.getElementById('usuario').value.trim(),
               email: emailVal,
               password: senha,
               cpf: cpfRaw,
@@ -1333,7 +1379,11 @@
           const data = await response.json();
 
           if (!response.ok) {
-            showToast(data.error || 'Erro ao realizar cadastro.');
+            if (data.details && data.details.length > 0) {
+              data.details.forEach(msg => showToast(msg));
+            } else {
+              showToast(data.error || 'Erro ao realizar cadastro.');
+            }
             submitBtn.disabled = false;
             btnText.classList.remove('hidden');
             btnLoading.classList.add('hidden');
@@ -1345,9 +1395,9 @@
           }
 
           showToast('Cadastro realizado com sucesso! Redirecionando...', 'success');
-          setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+          setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
         } catch (err) {
-          showToast('Erro de conexao. Verifique sua internet e tente novamente.');
+          showToast('Erro de conexão. Verifique sua internet e tente novamente.');
           submitBtn.disabled = false;
           btnText.classList.remove('hidden');
           btnLoading.classList.add('hidden');

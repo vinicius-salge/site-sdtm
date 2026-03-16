@@ -10,11 +10,14 @@ async function handler(req, res) {
     return res.status(400).json({ error: 'Dados invalidos', details: validation.errors });
   }
 
-  const { email, password } = validation.data;
+  const { identifier, password } = validation.data;
 
+  const isEmail = identifier.includes('@');
   const result = await db.query(
-    'SELECT id, email, password_hash FROM users WHERE email = $1',
-    [email]
+    isEmail
+      ? 'SELECT id, email, password_hash FROM users WHERE email = $1'
+      : 'SELECT id, email, password_hash FROM users WHERE username = $1',
+    [identifier]
   );
 
   if (result.rows.length === 0) {

@@ -3,8 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Area do Associado - SDTM</title>
-    <meta name="description" content="Acesse sua conta de associado do Sindicato dos Despachantes do Triangulo Mineiro." />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <title>Área do Associado - SDTM</title>
+    <meta name="description" content="Acesse sua conta de associado do Sindicato dos Despachantes do Triângulo Mineiro." />
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -181,10 +182,7 @@
       <div class="deco-circle w-[400px] h-[400px] bg-brand-gold top-[40%] right-[10%]"></div>
       
       <!-- Mapa do Triângulo Mineiro decorativo -->
-      <svg class="absolute bottom-0 left-0 w-[500px] h-[500px] opacity-[0.03]" viewBox="0 0 100 100" aria-hidden="true">
-        <path d="M 5,95 V 5 H 95 L 90,8 Q 80,10 75,15 T 60,30 Q 55,40 50,45 L 65,60 T 80,75 Q 90,85 95,90 Z" 
-              fill="none" stroke="#1e40af" stroke-width="1" class="map-outline"/>
-      </svg>
+      <img src="assets/img/logo/logo-mapa.png" alt="" class="absolute bottom-0 left-0 w-[500px] h-[500px] opacity-[0.04] object-contain" aria-hidden="true" />
     </div>
 
     <div class="relative min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8">
@@ -198,18 +196,7 @@
           <!-- Logo e Header -->
           <div class="space-y-8">
             <a href="index.html" class="inline-flex items-center gap-4 group">
-              <div class="w-16 h-16 relative">
-                <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-lg group-hover:scale-105 transition-transform duration-500">
-                  <path d="M 5,95 V 5 H 95 L 90,8 Q 80,10 75,15 T 60,30 Q 55,40 50,45 L 65,60 T 80,75 Q 90,85 95,90 Z" 
-                        stroke="#dc2626" stroke-width="3" fill="none" fill-rule="evenodd"/>
-                  <text x="32" y="42" font-family="Playfair Display" font-weight="700" font-size="10" fill="#0f172a">SDTM</text>
-                  <polygon points="68,36 71,39 65,39" fill="#dc2626" />
-                </svg>
-              </div>
-              <div class="flex flex-col">
-                <span class="font-serif font-bold text-2xl text-brand-800 tracking-tight">SDTM</span>
-                <span class="text-[11px] uppercase tracking-[0.25em] font-semibold text-brand-500">Triângulo Mineiro</span>
-              </div>
+              <img src="assets/img/logo/logo-inteira.png" alt="SDTM - Sindicato dos Despachantes do Triângulo Mineiro" class="h-16 w-auto drop-shadow-lg group-hover:scale-105 transition-transform duration-500" />
             </a>
             
             <div class="space-y-4">
@@ -287,10 +274,10 @@
             <!-- Formulário -->
             <form id="loginForm" class="space-y-6" novalidate>
               
-              <!-- Campo Usuário -->
+              <!-- Campo E-mail ou Usuario -->
               <div class="space-y-2">
                 <label for="usuario" class="block text-sm font-medium text-brand-700">
-                  Usuário
+                  E-mail ou Usuário
                 </label>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -298,19 +285,19 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
                   </div>
-                  <input 
-                    type="text" 
-                    id="usuario" 
-                    name="usuario"
+                  <input
+                    type="text"
+                    id="usuario"
+                    name="identifier"
                     required
                     autocomplete="username"
-                    placeholder="Digite seu usuário"
+                    placeholder="seu@email.com ou usuário"
                     class="input-refined w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200 text-brand-800 placeholder:text-brand-400 focus:border-brand-primary focus:outline-none"
                     aria-describedby="usuario-error"
                   />
                 </div>
                 <p id="usuario-error" class="text-sm text-red-600 hidden" role="alert">
-                  Por favor, insira seu nome de usuário.
+                  Insira seu e-mail ou usuário (mínimo 4 caracteres).
                 </p>
               </div>
               
@@ -475,9 +462,14 @@
       const btnText = document.getElementById('btnText');
       const btnLoading = document.getElementById('btnLoading');
       
-      // Real-time validation
+      // Real-time identifier validation (email or username)
+      function isValidIdentifier(val) {
+        if (!val || val.length < 4) return false;
+        if (val.includes('@')) return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+        return /^[a-zA-Z0-9_]{4,20}$/.test(val);
+      }
       usuarioInput.addEventListener('blur', function() {
-        if (this.value.length < 4) {
+        if (!isValidIdentifier(this.value)) {
           usuarioError.classList.remove('hidden');
           this.setAttribute('aria-invalid', 'true');
         } else {
@@ -485,9 +477,9 @@
           this.setAttribute('aria-invalid', 'false');
         }
       });
-      
+
       usuarioInput.addEventListener('input', function() {
-        if (this.value.length >= 4) {
+        if (isValidIdentifier(this.value)) {
           usuarioError.classList.add('hidden');
           this.setAttribute('aria-invalid', 'false');
         }
@@ -545,7 +537,7 @@
         // Validate
         let isValid = true;
 
-        if (usuarioInput.value.length < 4) {
+        if (!isValidIdentifier(usuarioInput.value)) {
           usuarioError.classList.remove('hidden');
           usuarioInput.setAttribute('aria-invalid', 'true');
           isValid = false;
@@ -558,7 +550,7 @@
         }
 
         if (!isValid) {
-          showToast('Por favor, corrija os erros no formulario.');
+          showToast('Por favor, corrija os erros no formulário.');
           return;
         }
 
@@ -572,7 +564,7 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              email: usuarioInput.value,
+              identifier: usuarioInput.value,
               password: passwordInput.value,
             }),
           });
@@ -587,7 +579,7 @@
             if (response.status === 429) {
               showToast('Muitas tentativas. Aguarde alguns minutos.');
             } else {
-              showToast(data.error || 'Credenciais invalidas.');
+              showToast(data.error || 'Credenciais inválidas.');
             }
             return;
           }
@@ -595,12 +587,12 @@
           // Store token and redirect
           localStorage.setItem('sdtm_token', data.token);
           showToast('Login realizado com sucesso!', 'success');
-          setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
+          setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
         } catch (err) {
           submitBtn.disabled = false;
           btnText.classList.remove('hidden');
           btnLoading.classList.add('hidden');
-          showToast('Erro de conexao. Verifique sua internet e tente novamente.');
+          showToast('Erro de conexão. Verifique sua internet e tente novamente.');
         }
       });
       

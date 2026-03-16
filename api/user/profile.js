@@ -6,7 +6,7 @@ async function handler(req, res) {
   const userId = req.user.id;
 
   const result = await db.query(
-    'SELECT id, email, created_at FROM users WHERE id = $1',
+    'SELECT id, username, email, created_at FROM users WHERE id = $1',
     [userId]
   );
 
@@ -23,6 +23,7 @@ async function handler(req, res) {
   );
 
   return res.status(200).json({
+    username: user.username,
     email: user.email,
     createdAt: user.created_at,
     documents: docsResult.rows.map(d => ({

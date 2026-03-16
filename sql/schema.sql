@@ -7,6 +7,7 @@
 -- NAO contem dados pessoais em texto
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    username VARCHAR(30) UNIQUE,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     cpf_hash VARCHAR(64) UNIQUE,
@@ -15,6 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 
 -- TABELA: documents (PDFs Criptografados)
 -- Contem apenas blobs binarios criptografados
