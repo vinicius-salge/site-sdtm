@@ -286,20 +286,29 @@
       <!-- Form Container -->
       <form id="cadastroForm" class="space-y-6" novalidate>
         
-        <!-- Número da Inscrição (Topo) -->
-        <div class="section-card rounded-2xl p-6 animate-slide-up">
+        <!-- Número da Inscrição (Topo) - Gerado Automaticamente -->
+        <div class="section-card rounded-2xl p-6 animate-slide-up bg-brand-50/50">
           <div class="max-w-md">
             <label for="numeroInscricao" class="block text-sm font-semibold text-brand-700 mb-2">
-              Número da Inscrição <span class="text-red-500">*</span>
+              Número da Inscrição <span class="text-xs font-normal text-brand-500">(Gerado automaticamente)</span>
             </label>
-            <input 
-              type="text" 
-              id="numeroInscricao" 
-              name="numeroInscricao"
-              required
-              placeholder="Digite o número da inscrição"
-              class="input-field w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-primary focus:outline-none"
-            />
+            <div class="relative">
+              <input 
+                type="text" 
+                id="numeroInscricao" 
+                name="numeroInscricao"
+                required
+                readonly
+                class="input-field w-full px-4 py-3 rounded-xl border border-brand-200 bg-slate-100 text-brand-800 font-semibold cursor-not-allowed focus:outline-none"
+              />
+              <div id="loadingInscricao" class="absolute right-3 top-1/2 -translate-y-1/2">
+                <svg class="animate-spin h-5 w-5 text-brand-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </div>
+            </div>
+            <p class="text-xs text-brand-500 mt-2">Este número é gerado automaticamente pelo sistema e não pode ser alterado.</p>
           </div>
         </div>
 
@@ -997,6 +1006,57 @@
     <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-3" role="status" aria-live="polite"></div>
 
     <script>
+      // Busca numero de inscricao automaticamente ao carregar a pagina
+      document.addEventListener('DOMContentLoaded', async function() {
+        await buscarNumeroInscricao();
+      });
+      
+      async function buscarNumeroInscricao() {
+        const input = document.getElementById('numeroInscricao');
+        const loading = document.getElementById('loadingInscricao');
+        
+        try {
+          console.log('Buscando numero de inscricao...');
+          const response = await fetch('/api/inscricao/proximo');
+          console.log('Response status:', response.status);
+          
+          const data = await response.json();
+          console.log('Response data:', data);
+          
+          if (data.success) {
+            input.value = data.numeroInscricao;
+            input.classList.remove('text-red-600');
+            input.classList.add('text-brand-800');
+          } else {
+            input.value = 'ERRO-000000';
+            input.classList.add('text-red-600');
+            console.error('Erro ao obter numero de inscricao:', data.error);
+            // Mostra mensagem de erro amigavel
+            const errorMsg = document.createElement('p');
+            errorMsg.id = 'erroInscricaoMsg';
+            errorMsg.className = 'text-xs text-red-600 mt-2';
+            errorMsg.innerHTML = `⚠️ ${data.error || 'Erro ao gerar numero. Tente recarregar a pagina.'}`;
+            if (!document.getElementById('erroInscricaoMsg')) {
+              input.parentNode.parentNode.appendChild(errorMsg);
+            }
+          }
+        } catch (error) {
+          input.value = 'ERRO-000000';
+          input.classList.add('text-red-600');
+          console.error('Erro na requisicao:', error);
+          const errorMsg = document.createElement('p');
+          errorMsg.id = 'erroInscricaoMsg';
+          errorMsg.className = 'text-xs text-red-600 mt-2';
+          errorMsg.innerHTML = `⚠️ Erro de conexao. Verifique sua internet.`;
+          if (!document.getElementById('erroInscricaoMsg')) {
+            input.parentNode.parentNode.appendChild(errorMsg);
+          }
+        } finally {
+          // Esconde o loading
+          if (loading) loading.style.display = 'none';
+        }
+      }
+      
       // Current step
       let currentStep = 1;
       const totalSteps = 3;
@@ -1326,8 +1386,9 @@
         const emailVal = document.getElementById('emailPessoal').value || document.getElementById('emailComercial').value;
 
         const val = (id) => document.getElementById(id)?.value || '';
+        const numeroInscricao = val('numeroInscricao');
         const dadosCadastro = {
-          numeroInscricao: val('numeroInscricao'),
+          numeroInscricao,
           nome: val('nome'),
           pai: val('pai'),
           mae: val('mae'),
@@ -1372,6 +1433,7 @@
               email: emailVal,
               password: senha,
               cpf: cpfRaw,
+              numeroInscricao,
               dadosCadastro,
             }),
           });

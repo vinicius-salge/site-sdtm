@@ -12,7 +12,15 @@ async function handler(req, res) {
     return res.status(400).json({ error: 'Dados invalidos', details: validation.errors });
   }
 
-  const { username, email, password, cpf, dadosCadastro } = validation.data;
+  const { username, email, password, cpf, numeroInscricao, dadosCadastro } = validation.data;
+
+  // Verifica se o numero de inscricao ja foi utilizado
+  if (numeroInscricao) {
+    const existingInscricao = await db.query('SELECT id FROM users WHERE numero_inscricao = $1', [numeroInscricao]);
+    if (existingInscricao.rows.length > 0) {
+      return res.status(409).json({ error: 'Numero de inscricao ja utilizado' });
+    }
+  }
 
   const existingUsername = await db.query('SELECT id FROM users WHERE username = $1', [username]);
   if (existingUsername.rows.length > 0) {
@@ -41,8 +49,8 @@ async function handler(req, res) {
       await client.query('BEGIN');
 
       const userResult = await client.query(
-        'INSERT INTO users (username, email, password_hash, cpf_hash) VALUES ($1, $2, $3, $4) RETURNING id',
-        [username, email, passwordHash, cpfHash]
+        'INSERT INTO users (username, email, password_hash, cpf_hash, numero_inscricao) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+        [username, email, passwordHash, cpfHash, numeroInscricao || null]
       );
       const userId = userResult.rows[0].id;
 

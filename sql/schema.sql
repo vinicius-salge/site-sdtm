@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     cpf_hash VARCHAR(64) UNIQUE,
+    numero_inscricao VARCHAR(20) UNIQUE,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP
 );
@@ -52,3 +53,25 @@ BEGIN
     DELETE FROM documents WHERE expires_at < NOW();
 END;
 $$ LANGUAGE plpgsql;
+
+-- ============================================
+-- SEQUENCIA: Numero de Inscricao
+-- Gera numeros unicos sequenciais para associados
+-- ============================================
+CREATE SEQUENCE IF NOT EXISTS seq_numero_inscricao
+    START WITH 1000
+    INCREMENT BY 1
+    NO MAXVALUE;
+
+-- TABELA: Configuracoes (para controle do sistema)
+CREATE TABLE IF NOT EXISTS configuracoes (
+    chave VARCHAR(50) PRIMARY KEY,
+    valor TEXT NOT NULL,
+    descricao TEXT,
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Insere prefixo padrao se nao existir
+INSERT INTO configuracoes (chave, valor, descricao)
+VALUES ('prefixo_inscricao', 'SDTM', 'Prefixo para numeros de inscricao')
+ON CONFLICT (chave) DO NOTHING;
