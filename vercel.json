@@ -1,7 +1,10 @@
 {
   "version": 2,
   "rewrites": [
-    { "source": "/dashboard", "destination": "/dashboard.html" }
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/cadastro", "destination": "/cadastro.html" },
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/noticias", "destination": "/noticias.html" }
   ],
   "functions": {
     "api/**/*.js": {

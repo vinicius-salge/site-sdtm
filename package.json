@@ -8,7 +8,10 @@
     "dev:api": "npx vercel@latest dev",
     "deploy": "vercel --prod",
     "db:migrate": "node sql/migrate.js",
-    "db:migrate:inscricao": "node sql/migrate-inscricao.js"
+    "db:migrate:inscricao": "node sql/migrate-inscricao.js",
+    "db:migrate:cadastro-data": "node sql/migrate-cadastro-data.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.9.0",
@@ -22,7 +25,8 @@
   },
   "devDependencies": {
     "serve": "^14.2.6",
-    "vercel": "^33.7.1"
+    "vercel": "^33.7.1",
+    "vitest": "^4.1.1"
   },
   "engines": {
     "node": ">=18.0.0"

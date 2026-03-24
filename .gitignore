@@ -6,7 +6,7 @@ node_modules/
 
 
 .vercel
-/.claude
 Segurança de Dados no Vercel.docx
 .env*.local
 start-dev.bat
+/.claude

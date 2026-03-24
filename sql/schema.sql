@@ -28,7 +28,13 @@ CREATE TABLE IF NOT EXISTS documents (
     iv VARCHAR(32) NOT NULL,
     salt VARCHAR(32) NOT NULL,
     auth_tag VARCHAR(32) NOT NULL,
+    data_encrypted_blob BYTEA,
+    data_iv VARCHAR(32),
+    data_salt VARCHAR(32),
+    data_auth_tag VARCHAR(32),
+    version INTEGER DEFAULT 1,
     created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP,
     downloaded_at TIMESTAMP,
     expires_at TIMESTAMP DEFAULT (NOW() + INTERVAL '2 years')
 );

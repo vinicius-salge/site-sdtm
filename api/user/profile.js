@@ -17,7 +17,8 @@ async function handler(req, res) {
   const user = result.rows[0];
 
   const docsResult = await db.query(
-    `SELECT id, created_at, downloaded_at
+    `SELECT id, created_at, downloaded_at, version, updated_at,
+     (data_encrypted_blob IS NOT NULL) as has_cadastro_data
      FROM documents WHERE user_id = $1 ORDER BY created_at DESC`,
     [userId]
   );
@@ -30,6 +31,9 @@ async function handler(req, res) {
       id: d.id,
       createdAt: d.created_at,
       lastDownload: d.downloaded_at,
+      version: d.version,
+      updatedAt: d.updated_at,
+      hasCadastroData: d.has_cadastro_data,
     })),
   });
 }
