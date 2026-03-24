@@ -132,13 +132,13 @@ describe('POST /api/auth/register', () => {
   });
 });
 
-// --- login.js ---
+// --- session.js (login) ---
 
 describe('POST /api/auth/login', () => {
   let handler;
 
   beforeEach(async () => {
-    const mod = await import('../../api/auth/login.js');
+    const mod = await import('../../api/auth/session.js');
     handler = mod.default;
   });
 
@@ -233,18 +233,18 @@ describe('POST /api/auth/login', () => {
   });
 });
 
-// --- logout.js ---
+// --- session.js (logout) ---
 
 describe('POST /api/auth/logout', () => {
   let handler;
 
   beforeEach(async () => {
-    const mod = await import('../../api/auth/logout.js');
+    const mod = await import('../../api/auth/session.js');
     handler = mod.default;
   });
 
   it('retorna 401 sem token de autenticacao', async () => {
-    const req = mockReq({ method: 'POST' });
+    const req = mockReq({ method: 'POST', url: '/?action=logout' });
     const res = mockRes();
     await handler(req, res);
     expect(res.statusCode).toBe(401);
@@ -253,7 +253,7 @@ describe('POST /api/auth/logout', () => {
   it('retorna 200 ao fazer logout com sucesso', async () => {
     mockQuery.mockResolvedValueOnce({ rows: [] }); // INSERT audit_logs
 
-    const req = mockReq({ method: 'POST', token: TEST_TOKEN });
+    const req = mockReq({ method: 'POST', token: TEST_TOKEN, url: '/?action=logout' });
     const res = mockRes();
     await handler(req, res);
     expect(res.statusCode).toBe(200);
@@ -262,7 +262,7 @@ describe('POST /api/auth/logout', () => {
   });
 
   it('retorna 405 para metodo GET', async () => {
-    const req = mockReq({ method: 'GET', token: TEST_TOKEN });
+    const req = mockReq({ method: 'GET', token: TEST_TOKEN, url: '/?action=logout' });
     const res = mockRes();
     await handler(req, res);
     expect(res.statusCode).toBe(405);

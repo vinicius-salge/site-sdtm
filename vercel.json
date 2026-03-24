@@ -1,6 +1,8 @@
 {
   "version": 2,
   "rewrites": [
+    { "source": "/api/auth/login", "destination": "/api/auth/session" },
+    { "source": "/api/auth/logout", "destination": "/api/auth/session?action=logout" },
     { "source": "/login", "destination": "/login.html" },
     { "source": "/cadastro", "destination": "/cadastro.html" },
     { "source": "/dashboard", "destination": "/dashboard.html" },

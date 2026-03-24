@@ -1,9 +1,10 @@
-export function mockReq({ method = 'POST', body = {}, user = null, token = null } = {}) {
+export function mockReq({ method = 'POST', body = {}, user = null, token = null, url = '/' } = {}) {
   return {
     method,
     body,
     user,
-    headers: token ? { authorization: `Bearer ${token}` } : {},
+    url,
+    headers: { host: 'localhost', ...(token ? { authorization: `Bearer ${token}` } : {}) },
   };
 }
 
