@@ -100,11 +100,20 @@ describe('validators.js', () => {
       expect(result.success).toBe(false);
     });
 
-    it('aceita dadosCadastro como objeto vazio', () => {
+    it('rejeita dadosCadastro sem nome (campo obrigatorio)', () => {
       const result = validate(updateCadastroSchema, {
         documentId: VALID_UUID,
         password: 'senha123',
         dadosCadastro: {},
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it('aceita dadosCadastro com apenas nome', () => {
+      const result = validate(updateCadastroSchema, {
+        documentId: VALID_UUID,
+        password: 'senha123',
+        dadosCadastro: { nome: 'Teste' },
       });
       expect(result.success).toBe(true);
     });
@@ -167,7 +176,7 @@ describe('validators.js', () => {
       username: 'joao_123',
       email: 'joao@email.com',
       password: '12345678',
-      cpf: '12345678901',
+      cpf: '52998224725',
       dadosCadastro: { nome: 'Joao' },
     };
 

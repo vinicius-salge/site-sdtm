@@ -9,4 +9,9 @@ node_modules/
 Segurança de Dados no Vercel.docx
 .env*.local
 start-dev.bat
+planner.md
+extract_doc.py
+doc_content.txt
+word/
+
 /.claude

@@ -7,7 +7,7 @@
 -- NAO contem dados pessoais em texto
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    username VARCHAR(30) UNIQUE,
+    username VARCHAR(30) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     cpf_hash VARCHAR(64) UNIQUE,
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS documents (
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP,
     downloaded_at TIMESTAMP,
-    expires_at TIMESTAMP DEFAULT (NOW() + INTERVAL '2 years')
+    expires_at TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS idx_documents_user ON documents(user_id);
@@ -51,14 +51,6 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     user_agent_hash VARCHAR(64),
     created_at TIMESTAMP DEFAULT NOW()
 );
-
--- FUNCAO: Limpeza automatica de documentos expirados
-CREATE OR REPLACE FUNCTION cleanup_expired_documents()
-RETURNS void AS $$
-BEGIN
-    DELETE FROM documents WHERE expires_at < NOW();
-END;
-$$ LANGUAGE plpgsql;
 
 -- ============================================
 -- SEQUENCIA: Numero de Inscricao

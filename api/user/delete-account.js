@@ -1,5 +1,6 @@
 import { withSecurityHeaders, methodGuard } from '../../middleware/security-headers.js';
 import { requireAuth } from '../../middleware/auth.js';
+import { withRateLimit } from '../../middleware/rate-limit.js';
 import { verifyPassword } from '../../lib/auth.js';
 import db from '../../lib/db.js';
 
@@ -26,13 +27,18 @@ async function handler(req, res) {
     return res.status(401).json({ error: 'Senha incorreta' });
   }
 
+  await db.query(
+    'INSERT INTO audit_logs (user_id, action) VALUES ($1, $2)',
+    [userId, 'DELETE_ACCOUNT']
+  );
+
   await db.query('DELETE FROM users WHERE id = $1', [userId]);
 
-  console.log('Account deleted (LGPD):', userId);
+  console.log(JSON.stringify({ action: 'DELETE_ACCOUNT', userId }));
   return res.status(200).json({
     success: true,
     message: 'Conta e todos os dados associados foram excluidos permanentemente',
   });
 }
 
-export default withSecurityHeaders(methodGuard(['DELETE'], requireAuth(handler)));
+export default withSecurityHeaders(methodGuard(['DELETE'], requireAuth(withRateLimit(handler))));

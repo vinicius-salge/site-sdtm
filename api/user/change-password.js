@@ -80,11 +80,11 @@ async function handler(req, res) {
 
     await client.query('COMMIT');
 
-    console.log('Password changed for user:', userId);
+    console.log(JSON.stringify({ action: 'CHANGE_PASSWORD', userId }));
     return res.status(200).json({ success: true, message: 'Senha alterada com sucesso' });
   } catch (err) {
     await client.query('ROLLBACK');
-    console.error('Password change failed for user:', userId);
+    console.error(JSON.stringify({ action: 'CHANGE_PASSWORD', userId, error: err.message }));
     return res.status(500).json({ error: 'Falha ao alterar senha' });
   } finally {
     client.release();

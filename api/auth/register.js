@@ -13,30 +13,7 @@ async function handler(req, res) {
   }
 
   const { username, email, password, cpf, numeroInscricao, dadosCadastro } = validation.data;
-
-  // Verifica se o numero de inscricao ja foi utilizado
-  if (numeroInscricao) {
-    const existingInscricao = await db.query('SELECT id FROM users WHERE numero_inscricao = $1', [numeroInscricao]);
-    if (existingInscricao.rows.length > 0) {
-      return res.status(409).json({ error: 'Numero de inscricao ja utilizado' });
-    }
-  }
-
-  const existingUsername = await db.query('SELECT id FROM users WHERE username = $1', [username]);
-  if (existingUsername.rows.length > 0) {
-    return res.status(409).json({ error: 'Usuario ja esta em uso' });
-  }
-
-  const existing = await db.query('SELECT id FROM users WHERE email = $1', [email]);
-  if (existing.rows.length > 0) {
-    return res.status(409).json({ error: 'Email ja cadastrado' });
-  }
-
   const cpfHash = generateHash(cpf);
-  const existingCpf = await db.query('SELECT id FROM users WHERE cpf_hash = $1', [cpfHash]);
-  if (existingCpf.rows.length > 0) {
-    return res.status(409).json({ error: 'CPF ja cadastrado' });
-  }
 
   let pdfBuffer = null;
   try {
@@ -50,9 +27,19 @@ async function handler(req, res) {
       await client.query('BEGIN');
 
       const userResult = await client.query(
-        'INSERT INTO users (username, email, password_hash, cpf_hash, numero_inscricao) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+        `INSERT INTO users (username, email, password_hash, cpf_hash, numero_inscricao)
+         VALUES ($1, $2, $3, $4, $5)
+         ON CONFLICT (email) DO NOTHING
+         RETURNING id`,
         [username, email, passwordHash, cpfHash, numeroInscricao || null]
       );
+
+      if (userResult.rows.length === 0) {
+        await client.query('ROLLBACK');
+        const conflictField = await detectConflict(client, username, email, cpfHash, numeroInscricao);
+        return res.status(409).json({ error: conflictField });
+      }
+
       const userId = userResult.rows[0].id;
 
       await client.query(
@@ -62,21 +49,49 @@ async function handler(req, res) {
          encryptedCadastro.encryptedBlob, encryptedCadastro.iv, encryptedCadastro.salt, encryptedCadastro.authTag]
       );
 
+      await client.query(
+        'INSERT INTO audit_logs (user_id, action) VALUES ($1, $2)',
+        [userId, 'REGISTER']
+      );
+
       await client.query('COMMIT');
 
       const token = generateToken({ sub: userId, email });
 
-      console.log('User registered:', userId);
+      console.log(JSON.stringify({ action: 'REGISTER', userId }));
       return res.status(201).json({ success: true, token });
     } catch (err) {
       await client.query('ROLLBACK');
+      if (err.code === '23505') {
+        const conflictField = await detectConflict(client, username, email, cpfHash, numeroInscricao);
+        return res.status(409).json({ error: conflictField });
+      }
       throw err;
     } finally {
       client.release();
     }
+  } catch (err) {
+    console.error(JSON.stringify({ action: 'REGISTER', error: err.message }));
+    return res.status(500).json({ error: 'Erro interno ao registrar usuario' });
   } finally {
     if (pdfBuffer) secureWipe(pdfBuffer);
   }
+}
+
+async function detectConflict(client, username, email, cpfHash, numeroInscricao) {
+  const checks = [
+    { query: 'SELECT 1 FROM users WHERE email = $1', params: [email], msg: 'Email ja cadastrado' },
+    { query: 'SELECT 1 FROM users WHERE username = $1', params: [username], msg: 'Usuario ja esta em uso' },
+    { query: 'SELECT 1 FROM users WHERE cpf_hash = $1', params: [cpfHash], msg: 'CPF ja cadastrado' },
+  ];
+  if (numeroInscricao) {
+    checks.push({ query: 'SELECT 1 FROM users WHERE numero_inscricao = $1', params: [numeroInscricao], msg: 'Numero de inscricao ja utilizado' });
+  }
+  for (const check of checks) {
+    const result = await client.query(check.query, check.params);
+    if (result.rows.length > 0) return check.msg;
+  }
+  return 'Dados ja cadastrados';
 }
 
 export default withSecurityHeaders(methodGuard(['POST'], withRateLimit(handler)));

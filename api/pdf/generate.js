@@ -31,21 +31,37 @@ async function handler(req, res) {
   }
 
   let pdfBuffer = null;
+  const client = await db.getClient();
   try {
     pdfBuffer = await generateFichaCadastral(dadosCadastro);
     const encrypted = await encryptPDF(pdfBuffer, password);
     const encryptedCadastro = await encryptData(dadosCadastro, password);
 
-    await db.query(
+    await client.query('BEGIN');
+
+    await client.query('DELETE FROM documents WHERE user_id = $1', [userId]);
+
+    await client.query(
       `INSERT INTO documents (user_id, encrypted_blob, iv, salt, auth_tag, data_encrypted_blob, data_iv, data_salt, data_auth_tag)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
       [userId, encrypted.encryptedBlob, encrypted.iv, encrypted.salt, encrypted.authTag,
        encryptedCadastro.encryptedBlob, encryptedCadastro.iv, encryptedCadastro.salt, encryptedCadastro.authTag]
     );
 
-    console.log('PDF generated for user:', userId);
+    await client.query(
+      `INSERT INTO audit_logs (user_id, action) VALUES ($1, 'GENERATE_PDF')`,
+      [userId]
+    );
+
+    await client.query('COMMIT');
+
+    console.log(JSON.stringify({ action: 'GENERATE_PDF', userId }));
     return res.status(201).json({ success: true, message: 'PDF gerado e armazenado com sucesso' });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
   } finally {
+    client.release();
     if (pdfBuffer) secureWipe(pdfBuffer);
   }
 }

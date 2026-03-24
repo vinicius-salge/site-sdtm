@@ -66,10 +66,10 @@ async function handler(req, res) {
     res.setHeader('Content-Length', decryptedPdf.length);
     res.setHeader('Cache-Control', 'no-store, private');
 
-    console.log('PDF downloaded by user:', userId);
+    console.log(JSON.stringify({ action: 'DOWNLOAD', userId, documentId }));
     return res.status(200).send(decryptedPdf);
   } catch (err) {
-    console.error('Decryption failed for doc:', documentId);
+    console.error(JSON.stringify({ action: 'DOWNLOAD', userId, documentId, error: err.message }));
     return res.status(500).json({ error: 'Falha ao descriptografar documento' });
   } finally {
     if (decryptedPdf) secureWipe(decryptedPdf);
