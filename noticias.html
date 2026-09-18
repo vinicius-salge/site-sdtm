@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="favicon.png" />
-    <title>Últimas Notícias - SDTM</title>
-    <meta name="description" content="Acompanhe as últimas notícias, comunicados e informações do Sindicato dos Despachantes do Triângulo Mineiro." />
+    <title>Notícias - SDTM</title>
+    <meta name="description" content="Comunicados oficiais e notícias do Sindicato dos Despachantes do Triângulo Mineiro." />
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,329 +22,99 @@
             },
             colors: {
               brand: {
-                50: '#f8fafc',
-                100: '#f1f5f9',
-                200: '#e2e8f0',
-                300: '#cbd5e1',
-                400: '#94a3b8',
-                500: '#64748b',
-                600: '#475569',
-                700: '#1e293b',
-                800: '#0f172a',
-                900: '#020617',
-                primary: '#1e40af',
-                accent: '#dc2626',
-                gold: '#d4af37',
-                success: '#10b981',
+                50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1',
+                400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#1e293b',
+                800: '#0f172a', 900: '#020617', primary: '#1e40af', gold: '#d4af37',
               }
             },
-            animation: {
-              'fade-in': 'fadeIn 0.5s ease-out forwards',
-              'slide-up': 'slideUp 0.4s ease-out forwards',
-            },
-            keyframes: {
-              fadeIn: {
-                '0%': { opacity: '0' },
-                '100%': { opacity: '1' },
-              },
-              slideUp: {
-                '0%': { opacity: '0', transform: 'translateY(20px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
-              },
-            }
           }
         }
       }
     </script>
     <style>
-      :root {
-        --brand-primary: #1e40af;
-        --brand-accent: #dc2626;
-        --brand-gold: #d4af37;
-        --brand-dark: #0f172a;
-      }
-      .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
-      .map-logo-path { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: draw 2.5s ease-out forwards; }
-      @keyframes draw { to { stroke-dashoffset: 0; } }
-      .scroll-reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-      .scroll-reveal.revealed { opacity: 1; transform: translateY(0); }
-      ::-webkit-scrollbar { width: 8px; }
-      ::-webkit-scrollbar-track { background: #f1f5f9; }
-      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-      ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-      *:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 2px; }
-      @media (prefers-reduced-motion: reduce) {
-        *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-        .scroll-reveal { opacity: 1; transform: none; }
-      }
+      .glass { background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+      .story-link:focus-visible { outline: 3px solid #1e40af; outline-offset: 8px; }
+      *:focus-visible { outline: 2px solid #1e40af; outline-offset: 3px; }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; } }
     </style>
   </head>
   <body class="font-sans text-slate-900 antialiased bg-white">
-
-    <!-- Header -->
-    <header class="sticky top-0 z-50 glass border-b border-slate-200/50">
+    <header class="sticky top-0 z-50 glass border-b border-slate-200/70">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-20">
-          <a href="index.html" class="flex items-center gap-3 group">
-            <img src="assets/img/logo/logo-mapa.png" alt="SDTM" class="w-32 h-32 object-contain drop-shadow-sm group-hover:scale-105 transition-transform" />
-            <div class="flex flex-col">
-              <span class="font-serif font-bold text-xl tracking-tight text-brand-800 leading-none">SDTM</span>
-              <span class="text-[10px] uppercase tracking-[0.2em] font-semibold text-brand-500">Triângulo Mineiro</span>
-            </div>
+        <div class="flex items-center justify-between h-20 gap-5">
+          <a href="index.html" class="flex items-center gap-3 shrink-0">
+            <img src="assets/img/logo/logo-mapa.png" alt="SDTM" class="w-12 h-12 object-contain" />
+            <span class="font-serif font-bold text-xl tracking-tight text-brand-800">SDTM</span>
           </a>
-
-          <!-- Desktop Nav -->
-          <nav class="hidden md:flex items-center gap-8">
+          <nav aria-label="Navegação principal" class="hidden lg:flex items-center gap-8">
             <a href="index.html#sobre" class="text-sm font-medium text-brand-600 hover:text-brand-primary transition-colors">Sobre</a>
             <a href="index.html#historia" class="text-sm font-medium text-brand-600 hover:text-brand-primary transition-colors">História</a>
             <a href="index.html#diretoria" class="text-sm font-medium text-brand-600 hover:text-brand-primary transition-colors">Diretoria</a>
-            <a href="noticias.html" class="text-sm font-medium text-brand-primary">Notícias</a>
+            <a href="noticias.html" aria-current="page" class="text-sm font-semibold text-brand-primary">Notícias</a>
             <a href="index.html#documentos" class="text-sm font-medium text-brand-600 hover:text-brand-primary transition-colors">Downloads</a>
-            <a href="index.html#contato" class="text-sm font-medium text-brand-600 hover:text-brand-primary transition-colors">Contato</a>
           </nav>
-
-          <!-- CTA -->
-          <div class="flex items-center gap-3">
-            <a href="login.html" class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-white bg-brand-800 rounded-full hover:bg-brand-700 transition-all">
-              Entrar
-            </a>
-            <a href="cadastro.html" class="hidden sm:inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-brand-700 bg-white border border-slate-200 rounded-full hover:bg-slate-50 transition-all">
-              Cadastrar
-            </a>
-          </div>
+          <a href="login.html" class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-white bg-brand-800 rounded-full hover:bg-brand-700 transition-colors">Entrar</a>
         </div>
       </div>
     </header>
 
-    <!-- Page Header -->
-    <section class="bg-brand-800 py-16 lg:py-24 relative overflow-hidden">
-      <div class="absolute top-0 right-0 opacity-[0.06]">
-        <img src="assets/img/logo/logo-mapa.png" alt="" class="w-[400px] h-[400px] object-contain brightness-0 invert" aria-hidden="true" />
-      </div>
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div class="max-w-3xl">
-          <p class="text-sm font-semibold text-brand-gold uppercase tracking-wide mb-4">Comunicação</p>
-          <h1 class="font-serif text-4xl sm:text-5xl font-bold text-white leading-tight text-balance mb-6">
-            Últimas Notícias
-          </h1>
-          <p class="text-lg text-slate-300">
-            Acompanhe os comunicados oficiais, novidades da categoria e
-            informações importantes para os despachantes documentalistas.
-          </p>
+    <main>
+      <section class="relative overflow-hidden bg-brand-800 py-16 lg:py-24">
+        <div class="absolute top-0 right-0 opacity-[0.06] pointer-events-none">
+          <img src="assets/img/logo/logo-mapa.png" alt="" class="w-[400px] h-[400px] object-contain brightness-0 invert" aria-hidden="true" />
         </div>
-      </div>
-    </section>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="max-w-3xl">
+            <h1 class="font-serif text-4xl sm:text-5xl font-bold text-white leading-tight">Notícias</h1>
+            <p class="mt-6 text-lg leading-relaxed text-slate-300">Comunicados oficiais e informações importantes do SDTM. Cada publicação possui uma página própria para leitura e compartilhamento.</p>
+          </div>
+        </div>
+      </section>
 
-    <!-- Comunicado: Assembleia Geral Extraordinária -->
-    <section class="py-12 bg-slate-50 border-b border-slate-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <article class="scroll-reveal bg-white rounded-2xl overflow-hidden shadow-lg border border-slate-200">
-          <div class="grid lg:grid-cols-2">
-            <div class="bg-brand-primary h-64 lg:h-auto flex items-center justify-center">
-              <div class="text-center p-8">
-                <div class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M5.07 19H18.93c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z"/>
-                  </svg>
+      <section aria-label="Publicações" class="py-14 lg:py-20">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="space-y-12">
+            <article class="border-b border-slate-200 pb-12">
+              <a href="noticia-assembleia-geral-extraordinaria.html" class="story-link group grid lg:grid-cols-[minmax(250px,0.8fr)_minmax(0,1.4fr)] gap-8 lg:gap-12 items-stretch rounded-xl">
+                <div class="min-h-[240px] rounded-xl bg-brand-primary px-8 py-10 text-white flex flex-col justify-between shadow-xl shadow-blue-900/10">
+                  <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M12 8v4m0 4h.01M5.07 19H18.93c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z"/></svg>
+                  <div>
+                    <time datetime="2026-09-29" class="font-serif text-5xl font-bold leading-none block">29</time>
+                    <span class="mt-2 block text-sm font-semibold tracking-wide text-blue-100">SETEMBRO · 18H</span>
+                  </div>
                 </div>
-                <p class="text-white/80 text-sm font-medium uppercase tracking-wide">Comunicado Oficial</p>
-              </div>
-            </div>
+                <div class="py-1 lg:py-5 flex flex-col items-start">
+                  <time datetime="2026-09-18" class="text-sm font-semibold text-brand-primary">18 de setembro de 2026</time>
+                  <h2 class="mt-3 font-serif text-3xl font-bold leading-tight text-brand-800 group-hover:text-brand-primary transition-colors">SDTM convoca associados para Assembleia Geral Extraordinária</h2>
+                  <p class="mt-5 max-w-2xl text-brand-600 leading-relaxed">A assembleia será realizada em 29 de setembro, às 18h, na sede do SDTM, em Uberlândia. Consulte a pauta e leia o edital completo na publicação.</p>
+                  <span class="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-brand-primary">Ler notícia e edital <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg></span>
+                </div>
+              </a>
+            </article>
 
-            <div class="p-8 lg:p-12">
-              <div class="flex items-center gap-2 mb-4">
-                <span class="px-3 py-1 bg-blue-50 text-brand-primary text-xs font-semibold rounded-full">Assembleia</span>
-                <time class="text-sm text-brand-500" datetime="2026-09-18">18 de setembro de 2026</time>
-              </div>
-              <h2 class="font-serif text-2xl font-bold text-brand-800 mb-4">
-                SDTM convoca associados para Assembleia Geral Extraordinária
-              </h2>
-              <p class="text-brand-600 mb-4">
-                O SDTM convoca os associados em pleno gozo de seus direitos sindicais para Assembleia Geral Extraordinária, no dia 29 de setembro de 2026, às 18h, na sede da entidade, na Rua Bélgica, 1138, bairro Tibery, em Uberlândia/MG.
-              </p>
-              <p class="text-brand-600 mb-6">
-                A pauta inclui a deliberação sobre a alienação de bem imóvel, a reforma estatutária e assuntos gerais vinculados aos itens anteriores. Em segunda convocação, a reunião será realizada às 18h30, com qualquer número de associados presentes.
-              </p>
-              <div class="flex items-center gap-3 mt-7 pt-6 border-t border-slate-100">
-                <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
-                  <span class="text-sm font-bold text-brand-primary">JS</span>
-                </div>
+            <article class="border-b border-slate-200 pb-12">
+              <a href="noticia-novo-site-sdtm.html" class="story-link group grid md:grid-cols-[150px_minmax(0,1fr)] gap-6 md:gap-10 items-start rounded-xl">
+                <time datetime="2026-02-09" class="font-serif text-2xl font-bold text-brand-700 md:pt-1">09<br><span class="text-sm font-sans font-semibold text-brand-500">FEV 2026</span></time>
                 <div>
-                  <p class="text-sm font-medium text-brand-800">José Alexandre Salge</p>
-                  <p class="text-xs text-brand-500">Presidente do SDTM</p>
+                  <h2 class="font-serif text-2xl font-bold text-brand-800 group-hover:text-brand-primary transition-colors">Novo site do SDTM está no ar</h2>
+                  <p class="mt-3 max-w-2xl text-brand-600 leading-relaxed">Conheça a plataforma criada para dar aos associados acesso mais simples a documentos, informações e serviços da entidade.</p>
+                  <span class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-brand-primary">Ler notícia <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg></span>
                 </div>
-              </div>
-            </div>
-          </div>
-          <div class="border-t border-slate-200 bg-slate-50 px-4 py-5 sm:px-8 sm:py-7 lg:px-12 lg:py-8">
-            <iframe
-              src="documentos/edital-convocacao-assembleia.pdf#view=FitH"
-              title="Edital de convocação para Assembleia Geral Extraordinária do SDTM"
-              class="block h-[72vh] min-h-[440px] max-h-[760px] w-full bg-white"
-              loading="lazy"
-            >
-              Seu navegador não consegue exibir o edital em PDF.
-            </iframe>
-            <p class="mt-4 text-sm text-brand-600">
-              Caso a visualização não carregue, <a href="documentos/edital-convocacao-assembleia.pdf" target="_blank" rel="noopener" class="font-semibold text-brand-primary underline decoration-2 underline-offset-4 hover:text-blue-800">abra o edital em uma nova aba</a>.
-            </p>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- Destaque Section -->
-    <section class="py-12 bg-slate-50 border-b border-slate-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="scroll-reveal bg-white rounded-2xl overflow-hidden shadow-lg border border-slate-200">
-          <div class="grid lg:grid-cols-2">
-            <div class="bg-brand-primary h-64 lg:h-auto flex items-center justify-center">
-              <div class="text-center p-8">
-                <div class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/>
-                  </svg>
-                </div>
-                <p class="text-white/80 text-sm font-medium uppercase tracking-wide">Comunicado Oficial</p>
-              </div>
-            </div>
-
-            <div class="p-8 lg:p-12">
-              <div class="flex items-center gap-2 mb-4">
-                <span class="px-3 py-1 bg-blue-50 text-brand-primary text-xs font-semibold rounded-full">Destaque</span>
-                <span class="text-sm text-brand-500">09 de fevereiro de 2026</span>
-              </div>
-              <h2 class="font-serif text-2xl font-bold text-brand-800 mb-4">
-                Novo site do SDTM está no ar!
-              </h2>
-              <p class="text-brand-600 mb-6">
-                É com grande satisfação que comunicamos o lançamento do novo website do Sindicato
-                dos Despachantes do Triângulo Mineiro. A plataforma foi desenvolvida para oferecer
-                melhor experiência aos associados, com fácil acesso a documentos, legislação e
-                informações sobre a entidade.
-              </p>
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
-                  <span class="text-sm font-bold text-brand-primary">JS</span>
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-brand-800">José Alexandre Salge</p>
-                  <p class="text-xs text-brand-500">Presidente do SDTM</p>
-                </div>
-              </div>
-            </div>
+              </a>
+            </article>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </main>
 
-    <!-- Mais noticias em breve -->
-    <section class="py-24 bg-white">
-      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center scroll-reveal">
-        <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-          <svg class="w-8 h-8 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
-          </svg>
-        </div>
-        <h2 class="font-serif text-2xl font-bold text-brand-800 mb-3">Em breve, mais notícias</h2>
-        <p class="text-brand-500 max-w-lg mx-auto">
-          Estamos preparando novos comunicados, informações sobre legislação
-          e novidades para os despachantes documentalistas. Fique atento!
-        </p>
-      </div>
-    </section>
-
-    <!-- Newsletter Section -->
-    <section class="py-16 bg-brand-800">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="max-w-2xl mx-auto text-center">
-          <h2 class="font-serif text-2xl font-bold text-white mb-4">
-            Receba as novidades por e-mail
-          </h2>
-          <p class="text-slate-300 mb-8">
-            Cadastre-se para receber comunicados oficiais e notícias importantes
-            diretamente na sua caixa de entrada.
-          </p>
-          <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" onsubmit="event.preventDefault(); this.querySelector('button').textContent='Cadastrado!'; this.querySelector('button').disabled=true;">
-            <input
-              type="email"
-              placeholder="Digite seu e-mail"
-              required
-              class="flex-1 px-5 py-3 rounded-full bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-transparent"
-            />
-            <button type="submit" class="px-6 py-3 bg-brand-gold text-brand-900 font-semibold rounded-full hover:bg-yellow-400 transition-colors">
-              Cadastrar
-            </button>
-          </form>
-        </div>
-      </div>
-    </section>
-
-    <!-- Footer -->
     <footer class="bg-brand-900 text-white">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
-          <div class="col-span-2 md:col-span-1">
-            <a href="index.html" class="flex items-center gap-3 mb-4">
-              <img src="assets/img/logo/logo-mapa.png" alt="SDTM" class="w-10 h-10 object-contain" style="filter: brightness(1.8) contrast(1.1);" />
-              <span class="font-serif font-bold text-lg">SDTM</span>
-            </a>
-            <p class="text-sm text-slate-400 mb-4">
-              Representando os despachantes documentalistas da região do Triângulo Mineiro desde 1978.
-            </p>
-          </div>
-
-          <div>
-            <h4 class="font-semibold mb-4">Institucional</h4>
-            <ul class="space-y-3">
-              <li><a href="index.html#sobre" class="text-sm text-slate-400 hover:text-white transition-colors">Sobre nós</a></li>
-              <li><a href="index.html#historia" class="text-sm text-slate-400 hover:text-white transition-colors">Nossa História</a></li>
-              <li><a href="index.html#diretoria" class="text-sm text-slate-400 hover:text-white transition-colors">Diretoria</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 class="font-semibold mb-4">Serviços</h4>
-            <ul class="space-y-3">
-              <li><a href="noticias.html" class="text-sm text-slate-400 hover:text-white transition-colors">Notícias</a></li>
-              <li><a href="index.html#documentos" class="text-sm text-slate-400 hover:text-white transition-colors">Documentos</a></li>
-              <li><a href="cadastro.html" class="text-sm text-slate-400 hover:text-white transition-colors">Cadastrar-se</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 class="font-semibold mb-4">Contato</h4>
-            <ul class="space-y-3">
-              <li class="text-sm text-slate-400">Av. Bélgica, 1138 - Tibery</li>
-              <li class="text-sm text-slate-400">Uberlândia, MG</li>
-              <li class="text-sm text-slate-400">(34) 3211-8924</li>
-              <li class="text-sm text-slate-400">contato@sdtm.org.br</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="border-t border-slate-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p class="text-sm text-slate-500">&copy; 2025 SDTM. Todos os direitos reservados.</p>
-          <div class="flex items-center gap-6">
-            <a href="#" class="text-sm text-slate-500 hover:text-slate-300 transition-colors">Privacidade</a>
-            <a href="#" class="text-sm text-slate-500 hover:text-slate-300 transition-colors">Termos</a>
-          </div>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <p class="text-sm text-slate-400">Sindicato dos Despachantes do Triângulo Mineiro</p>
+        <div class="flex gap-5 text-sm">
+          <a href="index.html#contato" class="text-slate-300 hover:text-white transition-colors">Contato</a>
+          <a href="index.html#documentos" class="text-slate-300 hover:text-white transition-colors">Documentos</a>
         </div>
       </div>
     </footer>
-
-    <script>
-      // Intersection Observer for scroll reveals
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('revealed');
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-      document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
-    </script>
   </body>
 </html>

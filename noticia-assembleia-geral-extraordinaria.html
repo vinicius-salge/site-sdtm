@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pt-BR" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <title>Assembleia Geral Extraordinária - SDTM</title>
+    <meta name="description" content="Edital de convocação para a Assembleia Geral Extraordinária do SDTM, em 29 de setembro de 2026." />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ['Outfit', 'system-ui', 'sans-serif'], serif: ['Playfair Display', 'Georgia', 'serif'] },
+            colors: { brand: { 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#1e293b', 800: '#0f172a', 900: '#020617', primary: '#1e40af', gold: '#d4af37' } },
+          }
+        }
+      }
+    </script>
+    <style>
+      .glass { background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+      *:focus-visible { outline: 2px solid #1e40af; outline-offset: 3px; }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; } }
+    </style>
+  </head>
+  <body class="font-sans text-slate-900 antialiased bg-white">
+    <header class="sticky top-0 z-50 glass border-b border-slate-200/70">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-20 gap-5">
+          <a href="index.html" class="flex items-center gap-3 shrink-0">
+            <img src="assets/img/logo/logo-mapa.png" alt="SDTM" class="w-12 h-12 object-contain" />
+            <span class="font-serif font-bold text-xl tracking-tight text-brand-800">SDTM</span>
+          </a>
+          <nav aria-label="Navegação principal" class="hidden lg:flex items-center gap-8">
+            <a href="index.html#sobre" class="text-sm font-medium text-brand-600 hover:text-brand-primary transition-colors">Sobre</a>
+            <a href="noticias.html" class="text-sm font-semibold text-brand-primary">Notícias</a>
+            <a href="index.html#documentos" class="text-sm font-medium text-brand-600 hover:text-brand-primary transition-colors">Downloads</a>
+          </nav>
+          <a href="login.html" class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-white bg-brand-800 rounded-full hover:bg-brand-700 transition-colors">Entrar</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="bg-brand-800 py-12 sm:py-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <a href="noticias.html" class="inline-flex items-center gap-2 text-sm font-semibold text-blue-200 hover:text-white transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            Todas as notícias
+          </a>
+          <time datetime="2026-09-18" class="mt-10 block text-sm font-semibold text-blue-200">18 de setembro de 2026</time>
+          <h1 class="mt-4 font-serif text-4xl sm:text-5xl font-bold leading-tight text-white">SDTM convoca associados para Assembleia Geral Extraordinária</h1>
+          <p class="mt-6 max-w-3xl text-lg leading-relaxed text-slate-300">A reunião será realizada no dia 29 de setembro de 2026, às 18h, na sede do sindicato, em Uberlândia/MG.</p>
+        </div>
+      </section>
+
+      <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div class="max-w-3xl text-lg leading-8 text-brand-600">
+          <p>O Sindicato dos Despachantes do Triângulo Mineiro e Alto Paranaíba (SDTM) convoca todos os associados em pleno gozo de seus direitos sindicais para participarem da Assembleia Geral Extraordinária.</p>
+
+          <dl class="my-10 border-y border-slate-200 text-base leading-6">
+            <div class="grid sm:grid-cols-[150px_1fr] gap-1 sm:gap-6 py-5 border-b border-slate-200">
+              <dt class="font-semibold text-brand-800">Data e horário</dt>
+              <dd>29 de setembro de 2026, às 18h.</dd>
+            </div>
+            <div class="grid sm:grid-cols-[150px_1fr] gap-1 sm:gap-6 py-5">
+              <dt class="font-semibold text-brand-800">Local</dt>
+              <dd>Rua Bélgica, nº 1138, bairro Tibery, Uberlândia/MG.</dd>
+            </div>
+          </dl>
+
+          <h2 class="font-serif text-3xl font-bold leading-tight text-brand-800">Horários e quórum de instalação</h2>
+          <ul class="mt-5 space-y-3 list-disc pl-6">
+            <li><strong class="font-semibold text-brand-800">Primeira convocação:</strong> às 18h, com a presença de metade mais um dos associados votantes.</li>
+            <li><strong class="font-semibold text-brand-800">Segunda convocação:</strong> às 18h30, com qualquer número de associados presentes.</li>
+          </ul>
+
+          <h2 class="mt-12 font-serif text-3xl font-bold leading-tight text-brand-800">Ordem do dia</h2>
+          <ol class="mt-5 space-y-4 list-decimal pl-6">
+            <li>Deliberação e votação sobre a autorização para alienação de bem imóvel de propriedade do sindicato, mediante prévia avaliação homologada.</li>
+            <li>Discussão, deliberação e votação das propostas de alteração e atualização do Estatuto Social da entidade.</li>
+            <li>Assuntos gerais vinculados aos itens anteriores.</li>
+          </ol>
+        </div>
+
+        <section aria-labelledby="edital-completo" class="mt-14 border-t border-slate-200 pt-10">
+          <h2 id="edital-completo" class="font-serif text-3xl font-bold leading-tight text-brand-800">Edital completo</h2>
+          <p class="mt-3 max-w-3xl text-brand-600 leading-relaxed">Consulte o documento oficial abaixo, sem precisar baixá-lo.</p>
+          <iframe
+            src="documentos/edital-convocacao-assembleia.pdf#view=FitH"
+            title="Edital de convocação para Assembleia Geral Extraordinária do SDTM"
+            class="mt-7 block h-[72vh] min-h-[440px] max-h-[760px] w-full bg-slate-100"
+            loading="lazy"
+          >Seu navegador não consegue exibir o edital em PDF.</iframe>
+          <p class="mt-4 text-sm text-brand-600">Caso a visualização não carregue, <a href="documentos/edital-convocacao-assembleia.pdf" target="_blank" rel="noopener" class="font-semibold text-brand-primary underline decoration-2 underline-offset-4 hover:text-blue-800">abra o edital em uma nova aba</a>.</p>
+        </section>
+
+        <div class="mt-14 pt-8 border-t border-slate-200">
+          <p class="font-semibold text-brand-800">José Alexandre Salge</p>
+          <p class="mt-1 text-sm text-brand-500">Presidente do SDTM</p>
+        </div>
+      </article>
+    </main>
+
+    <footer class="bg-brand-900 text-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <p class="text-sm text-slate-400">Sindicato dos Despachantes do Triângulo Mineiro</p>
+        <a href="noticias.html" class="text-sm text-slate-300 hover:text-white transition-colors">Voltar para notícias</a>
+      </div>
+    </footer>
+  </body>
+</html>

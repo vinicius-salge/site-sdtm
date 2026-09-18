@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <title>Novo site do SDTM está no ar - SDTM</title>
+    <meta name="description" content="O novo site do SDTM foi criado para facilitar o acesso a documentos, informações e serviços da entidade." />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ['Outfit', 'system-ui', 'sans-serif'], serif: ['Playfair Display', 'Georgia', 'serif'] },
+            colors: { brand: { 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#1e293b', 800: '#0f172a', 900: '#020617', primary: '#1e40af', gold: '#d4af37' } },
+          }
+        }
+      }
+    </script>
+    <style>
+      .glass { background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+      *:focus-visible { outline: 2px solid #1e40af; outline-offset: 3px; }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; } }
+    </style>
+  </head>
+  <body class="font-sans text-slate-900 antialiased bg-white">
+    <header class="sticky top-0 z-50 glass border-b border-slate-200/70">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-20 gap-5">
+          <a href="index.html" class="flex items-center gap-3 shrink-0">
+            <img src="assets/img/logo/logo-mapa.png" alt="SDTM" class="w-12 h-12 object-contain" />
+            <span class="font-serif font-bold text-xl tracking-tight text-brand-800">SDTM</span>
+          </a>
+          <nav aria-label="Navegação principal" class="hidden lg:flex items-center gap-8">
+            <a href="index.html#sobre" class="text-sm font-medium text-brand-600 hover:text-brand-primary transition-colors">Sobre</a>
+            <a href="noticias.html" class="text-sm font-semibold text-brand-primary">Notícias</a>
+            <a href="index.html#documentos" class="text-sm font-medium text-brand-600 hover:text-brand-primary transition-colors">Downloads</a>
+          </nav>
+          <a href="login.html" class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-white bg-brand-800 rounded-full hover:bg-brand-700 transition-colors">Entrar</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="bg-brand-800 py-12 sm:py-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <a href="noticias.html" class="inline-flex items-center gap-2 text-sm font-semibold text-blue-200 hover:text-white transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            Todas as notícias
+          </a>
+          <time datetime="2026-02-09" class="mt-10 block text-sm font-semibold text-blue-200">9 de fevereiro de 2026</time>
+          <h1 class="mt-4 font-serif text-4xl sm:text-5xl font-bold leading-tight text-white">Novo site do SDTM está no ar</h1>
+          <p class="mt-6 max-w-3xl text-lg leading-relaxed text-slate-300">Uma plataforma criada para aproximar o sindicato dos associados e facilitar o acesso às informações da entidade.</p>
+        </div>
+      </section>
+
+      <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div class="max-w-3xl text-lg leading-8 text-brand-600">
+          <p>O Sindicato dos Despachantes do Triângulo Mineiro apresenta seu novo website. A plataforma foi desenvolvida para oferecer uma experiência mais simples, clara e acessível aos associados.</p>
+
+          <p class="mt-7">No novo site, os profissionais encontram informações sobre a entidade, comunicados oficiais e acesso facilitado à área do associado e à biblioteca de documentos.</p>
+
+          <h2 class="mt-12 font-serif text-3xl font-bold leading-tight text-brand-800">Informação mais próxima do associado</h2>
+          <p class="mt-5">A iniciativa reforça o compromisso do SDTM com a comunicação e com o apoio ao dia a dia dos despachantes documentalistas da região.</p>
+
+          <p class="mt-7">Acompanhe a página de notícias para consultar os próximos comunicados e atualizações do sindicato.</p>
+        </div>
+
+        <div class="mt-14 pt-8 border-t border-slate-200">
+          <p class="font-semibold text-brand-800">José Alexandre Salge</p>
+          <p class="mt-1 text-sm text-brand-500">Presidente do SDTM</p>
+        </div>
+      </article>
+    </main>
+
+    <footer class="bg-brand-900 text-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <p class="text-sm text-slate-400">Sindicato dos Despachantes do Triângulo Mineiro</p>
+        <a href="noticias.html" class="text-sm text-slate-300 hover:text-white transition-colors">Voltar para notícias</a>
+      </div>
+    </footer>
+  </body>
+</html>
